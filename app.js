@@ -101,8 +101,8 @@ app.addEventListener('change',async e=>{
  try{
   if(file.size>10*1024*1024)throw Error('O arquivo excede 10 MB.');
   const next=validateBackup(JSON.parse(await file.text()));
-  const counts='Movimentações: '+next.transactions.length+'\\nClientes: '+next.clients.length+'\\nTrabalhos: '+next.jobs.length+'\\nCartões: '+next.cards.length;
-  if(!confirm('IMPORTAR BACKUP?\\n\\n'+counts+'\\n\\nATENÇÃO: os dados atuais deste dispositivo serão SUBSTITUÍDOS pelos dados do arquivo. Antes de continuar, use o botão Backup para salvar uma cópia dos dados atuais.\\n\\nDeseja realmente substituir?'))return;
+  const counts='Movimentações: '+next.transactions.length+'\nClientes: '+next.clients.length+'\nTrabalhos: '+next.jobs.length+'\nCartões: '+next.cards.length;
+  if(!confirm('IMPORTAR BACKUP?\n\n'+counts+'\n\nATENÇÃO: os dados atuais deste dispositivo serão SUBSTITUÍDOS pelos dados do arquivo. Antes de continuar, use o botão Backup para salvar uma cópia dos dados atuais.\n\nDeseja realmente substituir?'))return;
   // Só atualiza a memória após a gravação bem-sucedida no navegador.
   localStorage.setItem(KEY,JSON.stringify(next));
   data=structuredClone(next);lastSaved=structuredClone(next);storageProblem=false;
