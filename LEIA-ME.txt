@@ -1,0 +1,29 @@
+NEXO PWA — PRIMEIRA VERSÃO FUNCIONAL
+
+INCLUSO
+- Dashboard escuro, gráficos laranja/vermelho, filtro Geral/Pessoal/Profissional.
+- Cadastrar, editar e excluir receitas/despesas, clientes, trabalhos e cartões.
+- Progresso de projetos, faturas pendentes/pagas, exportação de backup JSON.
+- Salvamento local (localStorage) e arquivos PWA (manifesto + service worker).
+- Dados demonstrativos no primeiro acesso.
+
+COMO TESTAR NO MAC
+1. Extraia o ZIP.
+2. Abra o Terminal dentro da pasta NEXO-PWA.
+3. Execute: python3 -m http.server 8080
+4. Abra http://localhost:8080 no navegador.
+
+COMO INSTALAR NO IPHONE
+1. Publique TODOS os arquivos da pasta NEXO-PWA em uma hospedagem HTTPS (ex.: Netlify Drop, Vercel, GitHub Pages).
+2. No iPhone, abra o endereço publicado pelo Safari.
+3. Compartilhar > Adicionar à Tela de Início > Adicionar.
+4. Abra o ícone NEXO. Depois do primeiro carregamento online, os arquivos básicos ficam em cache para acesso offline.
+
+LIMITAÇÕES IMPORTANTES
+- Dados são armazenados somente no navegador/dispositivo; NÃO sincronizam entre Mac e iPhone.
+- Não há login nem banco de dados. Para sincronização, é necessária integração posterior com Supabase ou equivalente.
+- Armazenamento do navegador pode ser limpo pelo usuário/sistema; faça backups regulares. O backup exportado ainda não tem importação automática.
+- O gráfico histórico e o saldo inicial são demonstrativos, não derivam de um histórico real.
+- Faturas de cartões não são somadas às despesas automaticamente para evitar duplicidade.
+- Para funcionamento offline, primeiro visite o site com internet; atualizações podem exigir nova conexão.
+- Não abra index.html via file:// para testar o service worker: use localhost ou HTTPS.
