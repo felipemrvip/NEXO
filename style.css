@@ -319,3 +319,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* Native vector icon alignment */
+.ui-icon{display:inline-block;vertical-align:middle;flex-shrink:0}
+.nav button span{display:inline-flex;align-items:center;justify-content:center}
+.nav button span .ui-icon{width:20px;height:20px}
+.topactions .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.topactions .btn .ui-icon{height:16px;width:16px}
+.topactions .settingsbtn .ui-icon{width:19px;height:19px}
+@media(max-width:900px){.nav button span .ui-icon{width:21px;height:21px}}
