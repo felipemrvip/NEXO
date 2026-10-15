@@ -348,3 +348,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .account-dialog .cloud-actions .btn{min-height:42px}
 .topactions .accountbtn{color:#ffb06c!important;border-color:#775337!important}
 @media(max-width:600px){.account-overlay{padding:12px;align-items:flex-start}.account-dialog{border-radius:16px;padding:18px}.account-dialog-header{flex-direction:column}.account-dialog-header #nexo-account-close{align-self:flex-end;order:-1}.topactions .accountbtn{gap:4px}.account-dialog .cloud-actions .btn{flex:1}}
+
+/* Celular: ferramentas de conta e backup no fim do conteúdo, acima da navegação fixa. */
+@media (max-width:600px){
+  .shell{display:flex;flex-direction:column}
+  .shell>.top{display:contents}
+  .shell>.top>.brand{order:-1;position:static;width:100%;padding:4px 0 18px;margin:0 0 22px;border-bottom:1px solid var(--stroke)}
+  .shell>.top>.topactions{order:2;position:static;margin:30px 0 14px;padding:16px 0 4px;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;border-top:1px solid var(--stroke)}
+  .shell>.top>.topactions .btn{min-width:0;min-height:45px;padding:10px 8px;font-size:12px;white-space:normal;text-align:center}
+  .shell>.top>.topactions #nexo-import-file{display:none}
+  .shell>.nav{order:3}
+}
