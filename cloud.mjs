@@ -12,6 +12,7 @@ function paint() {
   panel.innerHTML = `<div class="cloud-card"><div><strong>Sincronização entre aparelhos</strong><p role="status" aria-live="polite">${escape(message)}</p>${user ? `<small>${escape(user.email)}</small>` : ''}</div><div class="cloud-actions">${!sdk ? '<button class="btn tiny" data-cloud="connect">Entrar com Google</button>' : !user ? '<button class="btn tiny" data-cloud="login">Entrar com Google</button>' : !active ? '<button class="btn tiny" data-cloud="enable">Ativar sincronização</button><button class="btn tiny ghost" data-cloud="logout">Sair</button>' : '<button class="btn tiny ghost" data-cloud="retry">Sincronizar agora</button><button class="btn tiny ghost" data-cloud="logout">Desconectar</button>'}<button class="btn tiny ghost" data-cloud="restore">Restaurar backup</button></div>${conflict ? '<div class="cloud-conflict"><p>Há versões diferentes neste aparelho e na nuvem. Nenhuma foi substituída. Baixe as duas cópias antes de escolher qual manter.</p><button class="btn tiny" data-cloud="copies">Baixar as duas versões</button><button class="btn tiny ghost" data-cloud="remote">Usar versão da nuvem</button><button class="btn tiny ghost" data-cloud="local">Usar versão deste aparelho</button></div>' : ''}</div>`;
 }
 function status(text) { message = text; paint(); }
+function authSignal(detail){window.dispatchEvent(new CustomEvent('nexo:auth',{detail}))}
 function download(value, name) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], {type:'application/json'}));
   const a = document.createElement('a'); a.href = url; a.download = name + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 5000);
@@ -27,10 +28,12 @@ function persist(next) { localStorage.setItem(META, JSON.stringify(next)); meta 
 function stop() { active = false; unsubscribe?.(); unsubscribe = null; conflict = null; }
 function error(e) {
   const code = e?.code || '';
+  if(!user)authSignal({error:'Não foi possível entrar. Verifique sua conexão e tente novamente.'});
   status(code.includes('permission-denied') ? 'O Firebase ainda bloqueia o acesso. Nenhum dado local foi apagado; as regras precisam ser publicadas.' : code.includes('popup') ? 'Login não concluído. Permita a janela de login; no iPhone, tente abrir o NEXO no Safari.' : 'Sincronização pausada: ' + (e?.message || 'verifique a conexão') + ' Os dados locais foram preservados.');
 }
 async function setup() {
   if (sdk) return;
+  authSignal({loading:true});
   status('Preparando login seguro…');
   const [app, a, f] = await Promise.all([
     import('https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js'),
@@ -43,6 +46,7 @@ async function setup() {
   await auth.authStateReady();
   a.onAuthStateChanged(auth, async next => {
     stop(); user = next;
+    authSignal({signedIn:!!next});
     if (user && !user.emailVerified) {
       await a.signOut(auth); status('Use uma conta Google com e-mail verificado.'); return;
     }
@@ -176,4 +180,4 @@ window.addEventListener('storage', e => {
   if (e.key === KEY || e.key === META || e.key === null) { disabled = true; stop(); bridge.lock(); status('Outra aba alterou os dados. Recarregue esta página antes de editar.'); }
 });
 paint();
-if (meta?.consent) setup().catch(error);
+setup().catch(error);
