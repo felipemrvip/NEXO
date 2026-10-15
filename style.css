@@ -389,3 +389,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* Situação operacional dos trabalhos */
 .job-status-control{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:#adb3bd;font-weight:650}.job-status-control select{background:#252a32;border:1px solid #454b55;border-radius:9px;padding:9px 12px;color:#fff;font:inherit;cursor:pointer;max-width:190px}.job-status-control select:focus{outline:2px solid #f68d3a;outline-offset:2px}
+
+/* Trabalhos separados por situação */
+.job-group{margin:24px 0 34px}.job-group-title{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #363c45;padding:10px 2px 14px;margin-bottom:16px}.job-group-title h2{font-size:18px;margin:0}.job-group-title span{font-size:12px;color:#a6abb5}.job-group-urgente .job-group-title h2{color:#ff8b71}.job-group-andamento .job-group-title h2{color:#ffac64}.job-group-feito .job-group-title h2{color:#6ad5a2}.job-empty{padding:18px;border:1px dashed #3a404b;border-radius:12px}.iconbox .ui-icon{width:24px;height:24px;display:block}
