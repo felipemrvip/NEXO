@@ -131,4 +131,30 @@ window.NexoBridge={
 if(storageProblem)alert('O armazenamento contém dados que não puderam ser lidos. O original foi preservado. Use Backup para salvá-lo antes de restaurar.');
 if(navigator.locks){navigator.locks.request('nexo-editor-v1',{ifAvailable:true},lock=>{if(!lock){alert('NEXO já está aberto em outra aba. Use a primeira aba para editar.');return}tabLocked=false;return new Promise(()=>{})})}else{tabLocked=false}
 
-import('./cloud.mjs').catch(error=>{const panel=document.getElementById('cloud-panel');if(panel)panel.textContent='Não foi possível carregar o login Google. Seus dados continuam salvos neste dispositivo. '+error.message;});
+const welcome=document.getElementById('nexo-welcome');
+const welcomeStatus=document.getElementById('nexo-welcome-status');
+function showWelcome(show){
+ welcome.hidden=!show;
+ document.body.classList.toggle('nexo-locked',show);
+ if(show){document.getElementById('nexo-account-view').hidden=true;document.body.classList.remove('account-open')}
+}
+showWelcome(true);
+window.addEventListener('nexo:auth',event=>{
+ const detail=event.detail||{};
+ if(detail.error){welcomeStatus.textContent=detail.error;document.getElementById('nexo-local-access').hidden=false;document.getElementById('nexo-google-login').disabled=false;return}
+ if(detail.loading){welcomeStatus.textContent='Verificando sua conta Google…';document.getElementById('nexo-google-login').disabled=true;return}
+ welcomeStatus.textContent='Entre com sua conta Google para continuar.';
+ document.getElementById('nexo-google-login').disabled=false;
+ showWelcome(!detail.signedIn);
+});
+document.getElementById('nexo-google-login').addEventListener('click',()=>{
+ const button=document.querySelector('#cloud-panel [data-cloud="login"],#cloud-panel [data-cloud="connect"]');
+ if(button)button.click();
+ else welcomeStatus.textContent='Aguarde a inicialização do login Google e tente novamente.';
+});
+document.getElementById('nexo-local-access').addEventListener('click',()=>{if(confirm('Continuar somente neste aparelho, sem sincronização? Seus dados locais serão preservados.'))showWelcome(false)});
+import('./cloud.mjs').catch(error=>{
+ const panel=document.getElementById('cloud-panel');
+ if(panel)panel.textContent='Não foi possível carregar o login Google. Seus dados continuam salvos neste dispositivo. '+error.message;
+ window.dispatchEvent(new CustomEvent('nexo:auth',{detail:{error:'Login indisponível. Verifique a internet ou continue somente neste aparelho.'}}));
+});
