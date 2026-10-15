@@ -84,12 +84,5 @@ app.addEventListener('submit',e=>{if(storageProblem||tabLocked){e.preventDefault
 render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
 
 
-window.NexoBridge={
- read(){if(storageProblem)throw Error('Dados locais inválidos. Exporte o backup original antes de restaurar.');return structuredClone(data)},
- replace(next){if(tabLocked)throw Error('Outra aba está em uso.');const raw=JSON.stringify(next);localStorage.setItem(KEY,raw);data=structuredClone(next);lastSaved=structuredClone(next);storageProblem=false;modal=null;render()},
- lock(){tabLocked=true},
- canEdit(){return !tabLocked&&!storageProblem}
-};
 if(storageProblem)alert('O armazenamento contém dados que não puderam ser lidos. O original foi preservado. Use Backup para salvá-lo antes de restaurar.');
-if(navigator.locks){navigator.locks.request('nexo-editor-v1',{ifAvailable:true},lock=>{if(!lock){document.getElementById('cloud-panel').textContent='NEXO já está aberto em outra aba. Use a primeira aba para editar e sincronizar.';return}tabLocked=false;return new Promise(()=>{})})}else{tabLocked=false}
-import('./cloud.mjs').catch(()=>{document.getElementById('cloud-panel').textContent='Sincronização indisponível. Seus dados continuam locais; recarregue quando estiver conectado.'});
+if(navigator.locks){navigator.locks.request('nexo-editor-v1',{ifAvailable:true},lock=>{if(!lock){alert('NEXO já está aberto em outra aba. Use a primeira aba para editar.');return}tabLocked=false;return new Promise(()=>{})})}else{tabLocked=false}
