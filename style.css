@@ -359,3 +359,27 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   .shell>.top>.topactions #nexo-import-file{display:none}
   .shell>.nav{order:3}
 }
+
+/* Tela inicial de acesso NEXO */
+.welcome-screen[hidden],.welcome-local[hidden]{display:none!important}
+.welcome-screen{position:fixed;inset:0;z-index:2000;overflow-y:auto;background:#0b0d11;color:#fff;display:grid;place-items:center;padding:28px 18px;isolation:isolate}
+.welcome-glow{position:absolute;z-index:-1;inset:0;pointer-events:none;background:radial-gradient(ellipse 48% 32% at 50% 32%,rgba(245,130,44,.12),transparent 78%),linear-gradient(180deg,#11141a 0%,#090b0e 100%)}
+.welcome-content{width:min(460px,100%);min-height:min(740px,calc(100svh - 56px));display:flex;flex-direction:column;justify-content:space-between;gap:44px;align-items:center;text-align:center}
+.welcome-brand{display:flex;flex-direction:column;align-items:center;gap:9px;padding-top:clamp(18px,7vh,70px)}
+.welcome-mark{display:grid;place-items:center;width:76px;height:76px;border-radius:22px;background:linear-gradient(135deg,#ffad58,#ef7125);color:#16130f;font-size:49px;font-weight:900;box-shadow:0 14px 50px #fa852a3b}
+.welcome-wordmark{font-size:40px;letter-spacing:-2px;font-weight:850;line-height:1}
+.welcome-brand p{font-size:10px;letter-spacing:.23em;color:#8c929c;margin:0;font-weight:700}
+.welcome-main{width:100%;display:flex;flex-direction:column;align-items:center;gap:18px}
+.welcome-eyebrow{font-size:10px;letter-spacing:.17em;color:#f4a66b;font-weight:800}
+.welcome-main h1{font-size:clamp(29px,6vw,43px);line-height:1.16;letter-spacing:-1.5px;margin:0;font-weight:800}
+.welcome-main h1 em{font-style:normal;color:#ff9849}
+.welcome-description{color:#a6abb5;font-size:15px;line-height:1.65;margin:0 0 10px;max-width:380px}
+.welcome-google{width:100%;min-height:55px;display:flex;justify-content:center;align-items:center;gap:13px;border:0;border-radius:13px;background:linear-gradient(110deg,#ffad58,#f17b2c);color:#1c1510;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 9px 35px #f5822c30}
+.welcome-google:hover:not(:disabled){filter:brightness(1.08)}
+.welcome-google:disabled{opacity:.62;cursor:wait}
+.welcome-status{font-size:12px;color:#939ba7;line-height:1.5;min-height:18px;margin:0}
+.welcome-local{border:0;background:transparent;color:#c4c8cf;font-size:13px;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:8px}
+.welcome-footer{display:flex;justify-content:space-between;gap:14px;width:100%;color:#707782;font-size:11px;border-top:1px solid #292d34;padding:18px 0 0}
+.nexo-locked{overflow:hidden}
+@media(max-width:600px){.welcome-screen{padding:24px 22px}.welcome-content{min-height:calc(100svh - 48px);gap:32px}.welcome-brand{padding-top:22px}.welcome-main{gap:15px}.welcome-description{font-size:14px}.welcome-footer{font-size:10px}}
+@media(prefers-reduced-motion:no-preference){.welcome-mark{animation:nexo-mark-in .6s ease-out both}@keyframes nexo-mark-in{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:none}}}
