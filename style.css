@@ -331,3 +331,20 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 
 #cloud-panel{max-width:1120px;margin:16px auto 0;padding:0 20px}.cloud-card{padding:16px;background:#191c22;border:1px solid #343741;border-radius:16px;color:#fff}.cloud-card p{font-size:13px;color:#bfc3cc;margin:8px 0;line-height:1.5}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.cloud-conflict{border-top:1px solid #555;margin-top:14px;padding-top:10px}.cloud-conflict button{margin:4px}.cloud-card small{overflow-wrap:anywhere}@media(max-width:600px){#cloud-panel{padding:0 12px}.cloud-actions .btn{min-height:44px}}
+
+/* Área dedicada de conta e sincronização (não ocupa o dashboard) */
+.account-overlay[hidden]{display:none!important}
+.account-overlay{position:fixed;inset:0;z-index:1200;background:rgba(4,6,10,.84);backdrop-filter:blur(12px);display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:clamp(16px,5vh,60px) 18px}
+.account-open{overflow:hidden}
+.account-dialog{width:min(760px,100%);background:linear-gradient(145deg,#20242b,#14171c);border:1px solid #3a404b;box-shadow:0 25px 80px #0009;border-radius:22px;padding:clamp(18px,3vw,30px)}
+.account-dialog-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px}
+.account-dialog-header h2{font-size:clamp(22px,3vw,30px);margin:6px 0 8px;color:#fff}
+.account-dialog-header p{font-size:14px;color:#aeb4bf;line-height:1.5;margin:0}
+.account-eyebrow{font-size:11px;font-weight:750;letter-spacing:.14em;color:#fb9a45}
+.account-dialog #cloud-panel{max-width:none;margin:0;padding:0}
+.account-dialog .cloud-card{background:#191d24;border-color:#343a45;border-radius:14px;padding:20px}
+.account-dialog .cloud-card strong{font-size:17px}
+.account-dialog .cloud-actions{margin-top:18px}
+.account-dialog .cloud-actions .btn{min-height:42px}
+.topactions .accountbtn{color:#ffb06c!important;border-color:#775337!important}
+@media(max-width:600px){.account-overlay{padding:12px;align-items:flex-start}.account-dialog{border-radius:16px;padding:18px}.account-dialog-header{flex-direction:column}.account-dialog-header #nexo-account-close{align-self:flex-end;order:-1}.topactions .accountbtn{gap:4px}.account-dialog .cloud-actions .btn{flex:1}}
