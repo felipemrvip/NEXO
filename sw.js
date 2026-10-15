@@ -1,5 +1,5 @@
-const CACHE='nexo-pwa-v9';
-const ASSETS=['./','./index.html','./style.css?v=9','./app.js?v=9','./manifest.webmanifest'];
+const CACHE='nexo-pwa-v10';
+const ASSETS=['./','./index.html','./style.css?v=10','./app.js?v=10','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('nexo-pwa-')&&key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
 self.addEventListener('fetch',event=>{
