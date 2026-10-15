@@ -392,3 +392,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* Trabalhos separados por situação */
 .job-group{margin:24px 0 34px}.job-group-title{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #363c45;padding:10px 2px 14px;margin-bottom:16px}.job-group-title h2{font-size:18px;margin:0}.job-group-title span{font-size:12px;color:#a6abb5}.job-group-urgente .job-group-title h2{color:#ff8b71}.job-group-andamento .job-group-title h2{color:#ffac64}.job-group-feito .job-group-title h2{color:#6ad5a2}.job-empty{padding:18px;border:1px dashed #3a404b;border-radius:12px}.iconbox .ui-icon{width:24px;height:24px;display:block}
+
+/* Identidade visual atualizada: imagem oficial do NEXO nas duas áreas internas. */
+.brand .brand-app-icon{display:block;width:44px;height:44px;object-fit:contain;background:none;border:0;border-radius:12px;box-shadow:none;padding:0;flex-shrink:0}
+.welcome-brand .welcome-brand-icon{display:block;width:104px;height:104px;object-fit:contain;background:none;border:0;box-shadow:none;padding:0;font-size:initial;color:inherit}
+@media(max-width:900px){.brand .brand-app-icon{width:40px;height:40px}}
