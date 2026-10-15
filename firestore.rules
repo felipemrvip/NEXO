@@ -1,0 +1,41 @@
+rules_version = '2';
+// Private snapshot: users/{uid}/nexo/state only.
+// Required: uid (owner, immutable, 1..128 chars), schemaVersion (1),
+// revision (int 1..2147483647, increments by 1), updatedAt (server time),
+// payload (opaque JSON backup, 1..700000 chars; decoded/validated by client).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId
+        && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com';
+    }
+    function uidUnchanged(userId) {
+      return request.resource.data.uid == userId;
+    }
+    function uidNotModified() {
+      return request.resource.data.uid == resource.data.uid;
+    }
+    function isValidSnapshot(d) {
+      return d.keys().hasOnly(['uid','schemaVersion','revision','updatedAt','payload'])
+        && d.keys().hasAll(['uid','schemaVersion','revision','updatedAt','payload'])
+        && d.uid is string && d.uid.size() > 0 && d.uid.size() <= 128
+        && d.schemaVersion == 1
+        && d.revision is int && d.revision >= 1 && d.revision <= 2147483647
+        && d.updatedAt is timestamp && d.updatedAt == request.time
+        && d.payload is string && d.payload.size() > 0 && d.payload.size() <= 700000;
+    }
+    match /users/{userId}/nexo/state {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && uidUnchanged(userId)
+        && isValidSnapshot(request.resource.data) && request.resource.data.revision == 1;
+      allow update: if isOwner(userId) && uidUnchanged(userId) && uidNotModified()
+        && isValidSnapshot(request.resource.data)
+        && request.resource.data.revision == resource.data.revision + 1;
+      allow delete: if false;
+    }
+  }
+}

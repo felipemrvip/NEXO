@@ -328,3 +328,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .topactions .btn .ui-icon{height:16px;width:16px}
 .topactions .settingsbtn .ui-icon{width:19px;height:19px}
 @media(max-width:900px){.nav button span .ui-icon{width:21px;height:21px}}
+
+
+#cloud-panel{max-width:1120px;margin:16px auto 0;padding:0 20px}.cloud-card{padding:16px;background:#191c22;border:1px solid #343741;border-radius:16px;color:#fff}.cloud-card p{font-size:13px;color:#bfc3cc;margin:8px 0;line-height:1.5}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.cloud-conflict{border-top:1px solid #555;margin-top:14px;padding-top:10px}.cloud-conflict button{margin:4px}.cloud-card small{overflow-wrap:anywhere}@media(max-width:600px){#cloud-panel{padding:0 12px}.cloud-actions .btn{min-height:44px}}
