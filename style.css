@@ -397,3 +397,72 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .brand .brand-app-icon{display:block;width:44px;height:44px;object-fit:contain;background:none;border:0;border-radius:12px;box-shadow:none;padding:0;flex-shrink:0}
 .welcome-brand .welcome-brand-icon{display:block;width:104px;height:104px;object-fit:contain;background:none;border:0;box-shadow:none;padding:0;font-size:initial;color:inherit}
 @media(max-width:900px){.brand .brand-app-icon{width:40px;height:40px}}
+
+
+/* Login NEXO v23 — alinhamento vertical responsivo, evitando grandes vazios. */
+.welcome-screen{
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+  padding:max(18px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));
+}
+.welcome-content{
+  width:min(440px,100%);
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:stretch;
+  gap:0;
+}
+.welcome-center{
+  flex:1 0 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  gap:clamp(26px,5svh,54px);
+  padding:clamp(24px,5svh,60px) 0;
+}
+.welcome-brand{
+  padding-top:0;
+  gap:8px;
+}
+.welcome-main{
+  width:100%;
+  gap:clamp(12px,1.8svh,18px);
+}
+.welcome-main h1{
+  font-size:clamp(29px,7.3vw,42px);
+  line-height:1.16;
+}
+.welcome-description{margin:0;line-height:1.55}
+.welcome-footer{
+  flex:0 0 auto;
+  margin-top:0;
+  padding:16px 0 0;
+}
+@media(max-width:600px){
+  .welcome-screen{
+    padding:max(18px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));
+  }
+  .welcome-content{min-height:100%;gap:0}
+  .welcome-center{gap:clamp(24px,4.5svh,43px);padding:28px 0 38px}
+  .welcome-brand{padding-top:0}
+  .welcome-main{gap:14px}
+  .welcome-main h1{font-size:clamp(29px,7.6vw,40px)}
+  .welcome-description{font-size:14px}
+  .welcome-footer{font-size:10px}
+}
+@media(max-height:720px){
+  .welcome-center{gap:20px;padding:18px 0 22px}
+  .welcome-brand .welcome-brand-icon{width:82px;height:82px}
+  .welcome-wordmark{font-size:35px}
+  .welcome-main{gap:10px}
+  .welcome-main h1{font-size:clamp(27px,6.8vw,36px)}
+  .welcome-google{min-height:50px}
+}
+@media(max-width:350px){
+  .welcome-footer{flex-wrap:wrap;justify-content:center;text-align:center;gap:5px}
+}
