@@ -215,7 +215,7 @@ document.getElementById('nexo-google-login').addEventListener('click',()=>{
  if(button)button.click();
  else welcomeStatus.textContent='Aguarde a inicialização do login Google e tente novamente.';
 });
-import('./cloud.mjs').catch(error=>{
+import('./cloud.mjs?v=25').catch(error=>{
  const panel=document.getElementById('cloud-panel');
  if(panel)panel.textContent='Não foi possível carregar o login Google. Seus dados continuam salvos neste dispositivo. '+error.message;
  window.dispatchEvent(new CustomEvent('nexo:auth',{detail:{error:'Login indisponível. Verifique a internet e tente novamente.'}}));
