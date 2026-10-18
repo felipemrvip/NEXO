@@ -1,6 +1,8 @@
-import {KEY, encode, validateData, decide, checkRemote} from './sync-core.mjs';
+import {encode, validateData, decide, checkRemote} from './sync-core.mjs';
 
-const META = 'nexo-cloud-v1';
+const LEGACY_META = 'nexo-cloud-v1';
+const META_PREFIX = 'nexo-cloud-v2-user-';
+let metaStorageKey = null;
 const ORIGINAL = 'nexo-backup-before-cloud-v1';
 const bridge = window.NexoBridge;
 const panel = document.getElementById('cloud-panel');
@@ -28,7 +30,21 @@ async function refreshInvitations() {
   paint();
 }
 
-try { meta = JSON.parse(localStorage.getItem(META)); } catch { message = 'Configuração de sincronização inválida. Dados locais preservados.'; }
+function loadMeta(uid,admin=false){
+  metaStorageKey=META_PREFIX+uid;
+  if(admin&&localStorage.getItem(metaStorageKey)===null){
+    const raw=localStorage.getItem(LEGACY_META);
+    if(raw){
+      try{
+        const old=JSON.parse(raw);
+        if(old?.uid===uid)localStorage.setItem(metaStorageKey,raw);
+      }catch{ /* Backup antigo preservado, sem migração automática. */ }
+    }
+  }
+  const raw=localStorage.getItem(metaStorageKey);
+  try{meta=raw?JSON.parse(raw):null;}
+  catch{meta=null;throw Error('Metadados da sincronização inválidos. Faça um backup antes de continuar.');}
+}
 const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function paint() {
   const actions = !sdk ? '<button class="btn tiny" data-cloud="connect">Entrar com Google</button>'
@@ -53,7 +69,7 @@ function backup(reason) {
     localStorage.setItem('nexo-backup-' + reason + '-' + crypto.randomUUID(), raw);
   }
 }
-function persist(next) { localStorage.setItem(META, JSON.stringify(next)); meta = next; }
+function persist(next) { if(!metaStorageKey)throw Error('Conta não selecionada.');localStorage.setItem(metaStorageKey, JSON.stringify(next)); meta = next; }
 function stop() { active = false; unsubscribe?.(); unsubscribe = null; conflict = null; }
 function error(e) {
   const code = e?.code || '';
@@ -76,7 +92,7 @@ async function setup() {
   a.onAuthStateChanged(auth, async next => {
     const generation=++authGeneration;
     stop(); allowed=false; user=next;
-    invitationRows=[];
+    invitationRows=[];meta=null;metaStorageKey=null;
     bridge.deactivateAccount();
     if (!next) {
       authSignal({signedIn:false});
@@ -97,6 +113,7 @@ async function setup() {
         return;
       }
       bridge.activateAccount(next.uid,isAdmin());
+      loadMeta(next.uid,isAdmin());
       allowed=true;
       authSignal({signedIn:true});
       if (meta?.uid === next.uid && meta?.consent === true && !disabled) start();
@@ -273,6 +290,7 @@ async function verifyAccess(){
     if(user?.uid===checkedUid){
       stop();allowed=false;bridge.deactivateAccount();
       authSignal({error:'Não foi possível confirmar seu acesso. Verifique a conexão e entre novamente.',signedIn:false});
+      await sdk.signOut(auth);
     }
   }finally{verifying=false;}
 }
@@ -282,7 +300,7 @@ window.addEventListener('offline', () => { if (active) status('Sem internet. Alt
 document.addEventListener('visibilitychange', () => { if (!document.hidden) {void verifyAccess(); void sync();} });
 setInterval(() => { if (allowed && !document.hidden) {void verifyAccess(); if(active && !conflict)void sync();} }, 30000);
 window.addEventListener('storage', e => {
-  if (e.key === KEY || e.key === META || e.key === null) { disabled = true; stop(); bridge.lock(); status('Outra aba alterou os dados. Recarregue esta página antes de editar.'); }
+  if (e.key === bridge.storageKey() || e.key === metaStorageKey || e.key === LEGACY_META || e.key === null) { disabled = true; stop(); bridge.lock(); status('Outra aba alterou os dados. Recarregue esta página antes de editar.'); }
 });
 paint();
 setup().catch(error);
