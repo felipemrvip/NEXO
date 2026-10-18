@@ -65,7 +65,8 @@ function backup(reason) {
   const key = bridge.storageKey();
   const raw = key ? localStorage.getItem(key) : null;
   if (raw !== null) {
-    if (localStorage.getItem(ORIGINAL) === null) localStorage.setItem(ORIGINAL, raw);
+    const originalKey = ORIGINAL + '-' + user.uid;
+    if (localStorage.getItem(originalKey) === null) localStorage.setItem(originalKey, raw);
     localStorage.setItem('nexo-backup-' + reason + '-' + crypto.randomUUID(), raw);
   }
 }
@@ -184,7 +185,7 @@ async function enable() {
   const count = value.transactions.length + value.clients.length + value.jobs.length + value.cards.length;
   if (!confirm(`Enviar seus dados ao Firebase do NEXO (nexo-4142e), na sua conta ${user.email}?\n\nInclui saldo inicial e ${count} registros de movimentações, clientes/contatos, trabalhos e cartões. Após ativar, alterações futuras também serão sincronizadas. Será criada uma cópia local e baixado um backup antes de qualquer envio. Se houver dados diferentes na nuvem, você escolherá qual versão manter.\n\nAutoriza ativar a sincronização?`)) return;
   backup('migration'); download(value, 'nexo-antes-da-sincronizacao-' + Date.now());
-  persist({uid:user.uid, consent:true, base:null, revision:0});
+  persist(meta?.uid===user.uid ? {...meta,consent:true} : {uid:user.uid, consent:true, base:null, revision:0});
   start();
 }
 async function resolve(choice) {
