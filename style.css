@@ -638,3 +638,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nubank-import-total>span{color:#d6b9e7}
 .nubank-import-stats>div{border-color:#46384f;background:#2b2233}
 .nubank-import-row .card-purchase-icon:has(.card-merchant-logo){background:#f8f8fb}
+
+
+/* v33: ícones profissionais no resumo e cabeçalho Nubank */
+.cards-overview-symbol{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;color:#d7864e;opacity:.85}
+.card-header-svg{display:block;width:34px;height:34px;stroke:currentColor;fill:none}
+.card-invoice-brand .card-header-svg{width:24px;height:24px}
+.card-nubank .card-invoice-brand{display:grid;place-items:center;background:linear-gradient(135deg,#9949c7,#69218e);border-radius:13px}
+.nubank-brand-lettering{display:block!important;color:#fff!important;font-size:22px!important;line-height:1!important;font-weight:900!important;letter-spacing:-2px!important;text-transform:none!important;margin:0!important;font-family:system-ui,-apple-system,sans-serif}
+.card-due-date{display:inline-flex;align-items:center;gap:6px}
+.card-date-svg{width:15px;height:15px;display:inline-block;flex:none}
