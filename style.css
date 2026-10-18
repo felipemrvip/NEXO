@@ -605,3 +605,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
  .nubank-import-footer{padding:12px 17px calc(12px + env(safe-area-inset-bottom,0px))}
  .nubank-import-footer .btn{flex:1;padding:11px 8px}
 }
+
+/* v30 — ícones vetoriais uniformes nas movimentações */
+.card-purchase-icon{border-radius:11px}
+.card-vector-icon{display:block;width:20px;height:20px;flex:none;stroke:currentColor;fill:none}
+.card-kind-payment{background:#193a33;color:#78d8b1}
+.card-kind-refund{background:#253a35;color:#8ed9bb}
+.card-kind-market{background:#3c3025;color:#e5b47d}
+.card-kind-shopping{background:#322b3e;color:#c3a4ec}
+.card-kind-digital{background:#292f46;color:#aab9ff}
+.card-kind-health{background:#3b2a35;color:#e6a8c9}
+.card-kind-other{background:#2a333c;color:#aebdcc}
+@media(max-width:600px){.card-vector-icon{width:18px;height:18px}}
