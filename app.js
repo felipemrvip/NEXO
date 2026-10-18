@@ -167,7 +167,7 @@ function cardMerchantBrand(p){
  if(p.cents<0||/pagamento\s+recebido|estorno|reembolso/i.test(p.title))return null;
  const title=String(p.title||'').toLowerCase();
  const brands=[
-  [/mercado\*mercadolivre|mercadolivre|mercado livre/,'mercadolivre','Mercado Livre'],
+  [/mercado\*mercadolivre|mercadolivre|mercado livre/,'mercado-libre','Mercado Livre'],
   [/adobe/,'adobe','Adobe'],
   [/spotify/,'spotify','Spotify'],
   [/shopee/,'shopee','Shopee'],
@@ -179,10 +179,10 @@ function cardMerchantBrand(p){
   [/youtube/,'youtube','YouTube'],
   [/\bapple\b|apple\.com/,'apple','Apple'],
   [/\bgoogle\b|google\s*\*/,'google','Google'],
-  [/disney\+|disneyplus/,'disneyplus','Disney+'],
-  [/mercado\s*pago|mercadopago/,'mercadopago','Mercado Pago']
+  [/disney\+|disneyplus/,null,'Disney+'],
+  [/mercado\s*pago|mercadopago/,null,'Mercado Pago']
  ];
- for(const [re,slug,name] of brands)if(re.test(title))return {slug,name};
+ for(const [re,slug,name] of brands)if(re.test(title))return slug?{slug,name}:null;
  return null;
 }
 function cardPurchaseIcon(p,type){
@@ -190,7 +190,7 @@ function cardPurchaseIcon(p,type){
  const brand=cardMerchantBrand(p);
  if(!brand)return fallback;
  // A marca é identificada localmente. Se a imagem externa não carregar, o SVG continua visível.
- return '<span class="card-merchant-logo"><span class="card-merchant-fallback">'+fallback+'</span><img src="https://cdn.simpleicons.org/'+brand.slug+'" alt="" loading="lazy" decoding="async" onload="this.previousElementSibling.hidden=true" onerror="this.remove()"></span>';
+ return '<span class="card-merchant-logo"><span class="card-merchant-fallback">'+fallback+'</span><img src="./icons/brands/'+brand.slug+'.svg?v=32" alt="" loading="lazy" decoding="async" onload="this.previousElementSibling.hidden=true" onerror="this.remove()"></span>';
 }
 
 function cardPurchaseName(title){
