@@ -1,5 +1,5 @@
-const CACHE='nexo-pwa-v23';
-const ASSETS=['./','./index.html','./style.css?v=23','./app.js?v=22','./cloud.mjs','./sync-core.mjs','./icons/icon-180.png?v=22','./icons/icon-192.png?v=22','./icons/icon-512.png?v=22','./icons/logo-nexo.webp?v=22','./icons/favicon-32.png?v=22','./manifest.webmanifest?v=22'];
+const CACHE='nexo-pwa-v24';
+const ASSETS=['./','./index.html','./style.css?v=24','./app.js?v=24','./cloud.mjs','./sync-core.mjs','./icons/icon-180.png?v=22','./icons/icon-192.png?v=22','./icons/icon-512.png?v=22','./icons/logo-nexo.webp?v=22','./icons/favicon-32.png?v=22','./manifest.webmanifest?v=22'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('nexo-pwa-')&&key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
 self.addEventListener('fetch',event=>{
