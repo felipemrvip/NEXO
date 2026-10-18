@@ -1,25 +1,25 @@
 rules_version = '2';
-// Private snapshot: users/{uid}/nexo/state only.
-// Required: uid (owner, immutable, 1..128 chars), schemaVersion (1),
-// revision (int 1..2147483647, increments by 1), updatedAt (server time),
-// payload (opaque JSON backup, 1..700000 chars; decoded/validated by client).
+// NEXO - acesso por convite. Publicar este arquivo no Firebase Console antes de ativar o frontend.
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId
+    function signedInWithGoogle() {
+      return request.auth != null
+        && request.auth.token.email is string
         && request.auth.token.email_verified == true
         && request.auth.token.firebase.sign_in_provider == 'google.com';
     }
-    function uidUnchanged(userId) {
-      return request.resource.data.uid == userId;
+    function accountEmail() { return request.auth.token.email.lower(); }
+    function isAdmin() {
+      return signedInWithGoogle() && accountEmail() == 'felipemrvip@gmail.com';
     }
-    function uidNotModified() {
-      return request.resource.data.uid == resource.data.uid;
+    function hasInvite() {
+      return signedInWithGoogle()
+        && exists(/databases/$(database)/documents/invitations/$(accountEmail()))
+        && get(/databases/$(database)/documents/invitations/$(accountEmail())).data.status == 'active';
     }
-    function isValidSnapshot(d) {
+    function isAllowed() { return isAdmin() || hasInvite(); }
+    function isOwner(userId) { return isAllowed() && request.auth.uid == userId; }
+    function validState(d) {
       return d.keys().hasOnly(['uid','schemaVersion','revision','updatedAt','payload'])
         && d.keys().hasAll(['uid','schemaVersion','revision','updatedAt','payload'])
         && d.uid is string && d.uid.size() > 0 && d.uid.size() <= 128
@@ -28,12 +28,37 @@ service cloud.firestore {
         && d.updatedAt is timestamp && d.updatedAt == request.time
         && d.payload is string && d.payload.size() > 0 && d.payload.size() <= 700000;
     }
+    match /invitations/{inviteEmail} {
+      allow get: if signedInWithGoogle() && (isAdmin() || accountEmail() == inviteEmail);
+      allow list: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['email','status','createdAt','updatedAt'])
+        && request.resource.data.keys().hasAll(['email','status','createdAt','updatedAt'])
+        && request.resource.data.email == inviteEmail
+        && inviteEmail == inviteEmail.lower()
+        && inviteEmail.size() <= 254
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['email','status','createdAt','updatedAt'])
+        && request.resource.data.keys().hasAll(['email','status','createdAt','updatedAt'])
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.status in ['active','blocked']
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
     match /users/{userId}/nexo/state {
       allow read: if isOwner(userId);
-      allow create: if isOwner(userId) && uidUnchanged(userId)
-        && isValidSnapshot(request.resource.data) && request.resource.data.revision == 1;
-      allow update: if isOwner(userId) && uidUnchanged(userId) && uidNotModified()
-        && isValidSnapshot(request.resource.data)
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && validState(request.resource.data)
+        && request.resource.data.revision == 1;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.uid == resource.data.uid
+        && validState(request.resource.data)
         && request.resource.data.revision == resource.data.revision + 1;
       allow delete: if false;
     }

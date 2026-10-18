@@ -466,3 +466,22 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @media(max-width:350px){
   .welcome-footer{flex-wrap:wrap;justify-content:center;text-align:center;gap:5px}
 }
+
+
+/* NEXO: gestão de convites e isolamento visual da sessão (v24). */
+.nexo-locked #app{visibility:hidden;pointer-events:none}
+.invite-admin{border-top:1px solid #343a45;margin-top:22px;padding-top:20px}
+.invite-admin>strong{display:block;font-size:16px;color:#fff}
+.invite-admin .muted{font-size:12px;line-height:1.55;margin:9px 0 18px}
+.invite-form{display:grid;gap:8px;margin-bottom:18px}
+.invite-form>label{font-size:12px;font-weight:700;color:#ced2d9}
+.invite-form-row{display:flex;align-items:center;gap:8px}
+.invite-form-row input{flex:1;min-width:0;min-height:44px;border-radius:10px;border:1px solid #484d56;padding:11px 12px;background:#11151b;color:#fff;font:inherit;font-size:14px}
+.invite-form-row input:focus{outline:2px solid #f49042;outline-offset:2px}
+.invite-form-row button{min-height:44px}
+.invite-list{display:grid;gap:7px;margin:8px 0 12px}
+.invite-row{display:flex;align-items:center;gap:9px;padding:10px 12px;background:#15181f;border:1px solid #363b46;border-radius:11px}
+.invite-email{font-size:13px;overflow-wrap:anywhere;flex:1;min-width:0}
+.invite-state{font-size:11px;color:#c7cbd2}
+.invite-row .btn{min-height:36px}
+@media(max-width:520px){.invite-row{flex-wrap:wrap}.invite-row .btn{margin-left:auto}.invite-form-row{flex-wrap:wrap}.invite-form-row button{flex:1}}

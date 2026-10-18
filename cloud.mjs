@@ -1,30 +1,76 @@
-import {KEY, encode, validateData, decide, checkRemote} from './sync-core.mjs';
+import {encode, validateData, decide, checkRemote} from './sync-core.mjs';
 
-const META = 'nexo-cloud-v1';
+const LEGACY_META = 'nexo-cloud-v1';
+const META_PREFIX = 'nexo-cloud-v2-user-';
+let metaStorageKey = null;
 const ORIGINAL = 'nexo-backup-before-cloud-v1';
 const bridge = window.NexoBridge;
 const panel = document.getElementById('cloud-panel');
 let auth, db, sdk, user, unsubscribe, busy = false, active = false, conflict = null, meta = null, message = 'Seus dados estão salvos somente neste dispositivo.';
 let disabled = false;
-try { meta = JSON.parse(localStorage.getItem(META)); } catch { message = 'Configuração de sincronização inválida. Dados locais preservados.'; }
+const ADMIN_EMAIL = 'felipemrvip@gmail.com';
+let allowed = false, authGeneration = 0, invitationRows = [];
+const isAdmin = () => !!user && user.emailVerified && user.providerData.some(p=>p.providerId==='google.com') && user.email?.toLowerCase()===ADMIN_EMAIL;
+const inviteRef = email => sdk.doc(db,'invitations',email.trim().toLowerCase());
+async function checkInvitation() {
+  if (!user || !user.emailVerified) return false;
+  if (isAdmin()) return true;
+  const doc = await sdk.getDocFromServer(inviteRef(user.email));
+  return doc.exists() && doc.data().status === 'active';
+}
+function invitationMarkup() {
+  return invitationRows.length ? invitationRows.map(item =>
+    '<div class="invite-row"><span class="invite-email">'+escape(item.email)+'</span><span class="invite-state">'+(item.status==='active'?'Ativo':'Bloqueado')+'</span><button type="button" class="btn tiny ghost" data-invite-toggle="'+escape(item.email)+'">'+(item.status==='active'?'Bloquear':'Reativar')+'</button></div>'
+  ).join('') : '<p class="muted">Nenhum convite cadastrado.</p>';
+}
+async function refreshInvitations() {
+  if (!isAdmin()) return;
+  const snap = await sdk.getDocs(sdk.collection(db,'invitations'));
+  invitationRows = [...snap.docs].map(d=>({email:d.id,status:d.data().status})).sort((a,b)=>a.email.localeCompare(b.email));
+  paint();
+}
+
+function loadMeta(uid,admin=false){
+  metaStorageKey=META_PREFIX+uid;
+  if(admin&&localStorage.getItem(metaStorageKey)===null){
+    const raw=localStorage.getItem(LEGACY_META);
+    if(raw){
+      try{
+        const old=JSON.parse(raw);
+        if(old?.uid===uid)localStorage.setItem(metaStorageKey,raw);
+      }catch{ /* Backup antigo preservado, sem migração automática. */ }
+    }
+  }
+  const raw=localStorage.getItem(metaStorageKey);
+  try{meta=raw?JSON.parse(raw):null;}
+  catch{meta=null;throw Error('Metadados da sincronização inválidos. Faça um backup antes de continuar.');}
+}
 const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function paint() {
-  panel.innerHTML = `<div class="cloud-card"><div><strong>Sincronização entre aparelhos</strong><p role="status" aria-live="polite">${escape(message)}</p>${user ? `<small>${escape(user.email)}</small>` : ''}</div><div class="cloud-actions">${!sdk ? '<button class="btn tiny" data-cloud="connect">Entrar com Google</button>' : !user ? '<button class="btn tiny" data-cloud="login">Entrar com Google</button>' : !active ? '<button class="btn tiny" data-cloud="enable">Ativar sincronização</button><button class="btn tiny ghost" data-cloud="logout">Sair</button>' : '<button class="btn tiny ghost" data-cloud="retry">Sincronizar agora</button><button class="btn tiny ghost" data-cloud="logout">Desconectar</button>'}<button class="btn tiny ghost" data-cloud="restore">Restaurar backup</button></div>${conflict ? '<div class="cloud-conflict"><p>Há versões diferentes neste aparelho e na nuvem. Nenhuma foi substituída. Baixe as duas cópias antes de escolher qual manter.</p><button class="btn tiny" data-cloud="copies">Baixar as duas versões</button><button class="btn tiny ghost" data-cloud="remote">Usar versão da nuvem</button><button class="btn tiny ghost" data-cloud="local">Usar versão deste aparelho</button></div>' : ''}</div>`;
+  const actions = !sdk ? '<button class="btn tiny" data-cloud="connect">Entrar com Google</button>'
+    : !user || !allowed ? '<button class="btn tiny" data-cloud="login">Entrar com Google</button>'
+    : !active ? '<button class="btn tiny" data-cloud="enable">Ativar sincronização</button><button class="btn tiny ghost" data-cloud="logout">Sair</button>'
+    : '<button class="btn tiny ghost" data-cloud="retry">Sincronizar agora</button><button class="btn tiny ghost" data-cloud="logout">Desconectar</button>';
+  const admin = isAdmin() && allowed ? '<section class="invite-admin"><strong>Administração • Convites</strong><p class="muted">Autorize somente quem você conhece. O convite é uma permissão de acesso, não um envio automático de e-mail.</p><form id="nexo-invite-form" class="invite-form"><label for="invite-email">E-mail Google do convidado</label><div class="invite-form-row"><input id="invite-email" type="email" name="email" placeholder="exemplo@gmail.com" required autocomplete="off" maxlength="254"><button class="btn tiny" type="submit">Autorizar</button></div></form><div class="invite-list">'+invitationMarkup()+'</div><button class="btn tiny ghost" data-cloud="list-invites">Atualizar lista</button></section>' : '';
+  const conflictMarkup = conflict ? '<div class="cloud-conflict"><p>Há versões diferentes neste aparelho e na nuvem. Nenhuma foi substituída. Baixe as duas cópias antes de escolher qual manter.</p><button class="btn tiny" data-cloud="copies">Baixar as duas versões</button><button class="btn tiny ghost" data-cloud="remote">Usar versão da nuvem</button><button class="btn tiny ghost" data-cloud="local">Usar versão deste aparelho</button></div>' : '';
+  panel.innerHTML = '<div class="cloud-card"><div><strong>Sincronização entre aparelhos</strong><p role="status" aria-live="polite">'+escape(message)+'</p>'+(user && allowed ? '<small>'+escape(user.email)+'</small>' : '')+'</div><div class="cloud-actions">'+actions+(allowed?'<button class="btn tiny ghost" data-cloud="restore">Restaurar backup</button>':'')+'</div>'+admin+conflictMarkup+'</div>';
 }
-function status(text) { message = text; paint(); }
+function status(text) { message = text; const node=panel.querySelector('.cloud-card [role="status"]'); if(node)node.textContent=text; else paint(); }
 function authSignal(detail){window.dispatchEvent(new CustomEvent('nexo:auth',{detail}))}
 function download(value, name) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], {type:'application/json'}));
   const a = document.createElement('a'); a.href = url; a.download = name + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 function backup(reason) {
-  const raw = localStorage.getItem(KEY);
+  const key = bridge.storageKey();
+  const raw = key ? localStorage.getItem(key) : null;
   if (raw !== null) {
-    if (localStorage.getItem(ORIGINAL) === null) localStorage.setItem(ORIGINAL, raw);
+    const originalKey = ORIGINAL + '-' + user.uid;
+    if (localStorage.getItem(originalKey) === null) localStorage.setItem(originalKey, raw);
     localStorage.setItem('nexo-backup-' + reason + '-' + crypto.randomUUID(), raw);
   }
 }
-function persist(next) { localStorage.setItem(META, JSON.stringify(next)); meta = next; }
+function persist(next) { if(!metaStorageKey)throw Error('Conta não selecionada.');localStorage.setItem(metaStorageKey, JSON.stringify(next)); meta = next; }
 function stop() { active = false; unsubscribe?.(); unsubscribe = null; conflict = null; }
 function error(e) {
   const code = e?.code || '';
@@ -45,27 +91,56 @@ async function setup() {
   auth = a.getAuth(firebase); db = f.getFirestore(firebase);
   await auth.authStateReady();
   a.onAuthStateChanged(auth, async next => {
-    stop(); user = next;
-    authSignal({signedIn:!!next});
-    if (user && !user.emailVerified) {
-      await a.signOut(auth); status('Use uma conta Google com e-mail verificado.'); return;
+    const generation=++authGeneration;
+    stop(); allowed=false; user=next;
+    invitationRows=[];meta=null;metaStorageKey=null;
+    bridge.deactivateAccount();paint();
+    if (!next) {
+      authSignal({signedIn:false});
+      status('Entre com sua conta Google. O acesso é restrito a pessoas convidadas.');
+      return;
     }
-    if (user && meta?.uid === user.uid && meta?.consent === true && !disabled) start();
-    else status(user ? 'Login concluído. Os registros ainda não foram enviados; ative a sincronização quando desejar.' : 'Seus dados continuam neste dispositivo. Entre para sincronizar.');
+    authSignal({loading:true,signedIn:false});
+    try {
+      if (!next.emailVerified || !next.providerData.some(p=>p.providerId==='google.com')) {
+        throw Error('Use uma conta Google com e-mail verificado.');
+      }
+      const permitted = await checkInvitation();
+      if (generation!==authGeneration || auth.currentUser?.uid!==next.uid) return;
+      if (!permitted) {
+        status('Acesso restrito: esta conta não possui convite ativo.');
+        await a.signOut(auth);
+        if(generation===authGeneration-1)authSignal({error:'Somente pessoas convidadas pelo administrador podem entrar.',signedIn:false});
+        return;
+      }
+      bridge.activateAccount(next.uid,isAdmin());
+      loadMeta(next.uid,isAdmin());
+      allowed=true;
+      paint();
+      authSignal({signedIn:true});
+      if (meta?.uid === next.uid && meta?.consent === true && !disabled) start();
+      else status('Login autorizado. Seus dados estão neste aparelho. Ative a sincronização se desejar.');
+      if(isAdmin())void refreshInvitations().catch(error);
+    } catch(e) {
+      if(generation!==authGeneration)return;
+      stop();allowed=false;bridge.deactivateAccount();
+      authSignal({error:'Não foi possível validar o acesso: '+(e.message||'verifique sua conexão.'),signedIn:false});
+      status('Acesso não confirmado. Nenhum dado foi alterado.');
+    }
   });
   paint();
 }
 function reference() { return sdk.doc(db, 'users', user.uid, 'nexo', 'state'); }
 function start() {
-  if (disabled) return;
-  stop(); active = true;
+  if (disabled || !allowed || !user) return;
+  stop(); active = true;paint();
   unsubscribe = sdk.onSnapshot(reference(), {includeMetadataChanges:true}, snap => {
     if (!snap.metadata.fromCache && !snap.metadata.hasPendingWrites) void sync();
   }, error);
   void sync();
 }
 async function sync() {
-  if (!active || busy || conflict || disabled || !user || !bridge.canEdit()) return;
+  if (!active || busy || conflict || disabled || !user || !allowed || !bridge.canEdit()) return;
   if (!navigator.onLine) { status('Sem internet. Alterações salvas neste aparelho, aguardando conexão.'); return; }
   busy = true;
   const currentUser = user.uid;
@@ -73,7 +148,7 @@ async function sync() {
     status('Sincronizando…');
     const ref = reference();
     const snapshot = await sdk.getDocFromServer(ref);
-    if (!active || user?.uid !== currentUser || disabled) return;
+    if (!active || user?.uid !== currentUser || disabled || !allowed) return;
     const remote = snapshot.exists() ? checkRemote(snapshot.data()) : null;
     const local = encode(bridge.read());
     const base = meta?.uid === currentUser ? meta.base : null;
@@ -93,7 +168,7 @@ async function sync() {
       await sdk.runTransaction(db, async tx => {
         const latest = await tx.get(ref);
         const d = latest.exists() ? checkRemote(latest.data()) : null;
-        if (!active || disabled || user?.uid !== currentUser || (d?.revision ?? 0) !== (remote?.revision ?? 0) || (d?.payload ?? null) !== (remote?.payload ?? null)) throw Error('Outra alteração chegou durante o envio. Tente sincronizar novamente.');
+        if (!active || disabled || !allowed || user?.uid !== currentUser || (d?.revision ?? 0) !== (remote?.revision ?? 0) || (d?.payload ?? null) !== (remote?.payload ?? null)) throw Error('Outra alteração chegou durante o envio. Tente sincronizar novamente.');
         tx.set(ref, {schemaVersion:1, uid:currentUser, revision, payload:local, updatedAt:sdk.serverTimestamp()});
       });
       persist({...meta, base:local, revision});
@@ -104,14 +179,14 @@ async function sync() {
   finally { busy = false; }
 }
 async function enable() {
-  if (disabled || !user || busy) return;
+  if (disabled || !user || !allowed || busy) return;
   if (!bridge.canEdit()) throw Error('Use a primeira aba do NEXO aberta neste navegador.');
   if (!navigator.locks) throw Error('Atualize o navegador antes de ativar a sincronização.');
   const value = validateData(bridge.read()); encode(value);
   const count = value.transactions.length + value.clients.length + value.jobs.length + value.cards.length;
   if (!confirm(`Enviar seus dados ao Firebase do NEXO (nexo-4142e), na sua conta ${user.email}?\n\nInclui saldo inicial e ${count} registros de movimentações, clientes/contatos, trabalhos e cartões. Após ativar, alterações futuras também serão sincronizadas. Será criada uma cópia local e baixado um backup antes de qualquer envio. Se houver dados diferentes na nuvem, você escolherá qual versão manter.\n\nAutoriza ativar a sincronização?`)) return;
   backup('migration'); download(value, 'nexo-antes-da-sincronizacao-' + Date.now());
-  persist({uid:user.uid, consent:true, base:null, revision:0});
+  persist(meta?.uid===user.uid ? {...meta,consent:true} : {uid:user.uid, consent:true, base:null, revision:0});
   start();
 }
 async function resolve(choice) {
@@ -155,6 +230,7 @@ panel.addEventListener('click', async event => {
   if (!action) return;
   try {
     if (disabled && action !== 'copies') throw Error('Use a primeira aba do NEXO aberta neste navegador.');
+    if (action === 'list-invites') await refreshInvitations();
     if (action === 'connect') { await setup(); status('Pronto. Clique em Entrar com Google para abrir o login.'); }
     if (action === 'login') { const provider = new sdk.GoogleAuthProvider(); provider.setCustomParameters({prompt:'select_account'}); await sdk.signInWithPopup(auth, provider); }
     if (action === 'enable') await enable();
@@ -171,13 +247,62 @@ panel.addEventListener('click', async event => {
     if (action === 'remote' || action === 'local') await resolve(action);
   } catch(e) { error(e); }
 });
+panel.addEventListener('submit', async e => {
+  if (e.target.id !== 'nexo-invite-form') return;
+  e.preventDefault();
+  if (!isAdmin()) return;
+  const email = String(new FormData(e.target).get('email')||'').trim().toLowerCase();
+  if (email===ADMIN_EMAIL) { alert('O administrador já possui acesso.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length>254) { alert('Informe um e-mail válido.'); return; }
+  try {
+    const ref=inviteRef(email), existing=await sdk.getDocFromServer(ref);
+    if (existing.exists()) {
+      if (existing.data().status==='active') { alert('Esse e-mail já está autorizado.'); return; }
+      await sdk.updateDoc(ref,{status:'active',updatedAt:sdk.serverTimestamp()});
+    } else await sdk.setDoc(ref, {email,status:'active',createdAt:sdk.serverTimestamp(),updatedAt:sdk.serverTimestamp()});
+    e.target.reset(); await refreshInvitations(); status('E-mail autorizado: '+email+'. Compartilhe o link do NEXO com essa pessoa.');
+  } catch(err) { error(err); }
+});
+panel.addEventListener('click', async e => {
+  const email = e.target.closest('[data-invite-toggle]')?.dataset.inviteToggle;
+  if (!email || !isAdmin()) return;
+  try {
+    const ref=inviteRef(email), snap=await sdk.getDocFromServer(ref);
+    if (!snap.exists()) return;
+    const status=snap.data().status==='active'?'blocked':'active';
+    if (!confirm((status==='blocked'?'Bloquear':'Reativar')+' o acesso de '+email+'?')) return;
+    await sdk.updateDoc(ref,{status,updatedAt:sdk.serverTimestamp()});
+    await refreshInvitations();
+  } catch(err) { error(err); }
+});
+let verifying=false;
+async function verifyAccess(){
+  if(verifying||!allowed||!user||!navigator.onLine)return;
+  verifying=true;
+  const checkedUid=user.uid;
+  try{
+    const stillAllowed=await checkInvitation();
+    if(user?.uid!==checkedUid)return;
+    if(!stillAllowed){
+      stop();allowed=false;bridge.deactivateAccount();
+      authSignal({error:'Seu convite foi bloqueado ou revogado. Contate o administrador.',signedIn:false});
+      await sdk.signOut(auth);
+    }
+  }catch(e){
+    if(user?.uid===checkedUid){
+      stop();allowed=false;bridge.deactivateAccount();
+      authSignal({error:'Não foi possível confirmar seu acesso. Verifique a conexão e entre novamente.',signedIn:false});
+      await sdk.signOut(auth);
+    }
+  }finally{verifying=false;}
+}
 window.addEventListener('nexo:changed', () => { if (active) { status('Alterações salvas neste aparelho; aguardando sincronização.'); void sync(); } });
-window.addEventListener('online', () => { void sync(); });
+window.addEventListener('online', () => { void verifyAccess(); void sync(); });
 window.addEventListener('offline', () => { if (active) status('Sem internet. Alterações permanecem salvas neste aparelho.'); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) void sync(); });
-setInterval(() => { if (active && !document.hidden && !conflict) void sync(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) {void verifyAccess(); void sync();} });
+setInterval(() => { if (allowed && !document.hidden) {void verifyAccess(); if(active && !conflict)void sync();} }, 30000);
 window.addEventListener('storage', e => {
-  if (e.key === KEY || e.key === META || e.key === null) { disabled = true; stop(); bridge.lock(); status('Outra aba alterou os dados. Recarregue esta página antes de editar.'); }
+  if (e.key === bridge.storageKey() || e.key === metaStorageKey || e.key === LEGACY_META || e.key === null) { disabled = true; stop(); bridge.lock(); status('Outra aba alterou os dados. Recarregue esta página antes de editar.'); }
 });
 paint();
 setup().catch(error);
