@@ -1,4 +1,4 @@
-import {encode, validateData, decide, checkRemote} from './sync-core.mjs';
+import {encode, validateData, decide, checkRemote, mergeThreeWay} from './sync-core.mjs';
 
 const LEGACY_META = 'nexo-cloud-v1';
 const META_PREFIX = 'nexo-cloud-v2-user-';
@@ -152,7 +152,17 @@ async function sync() {
     const remote = snapshot.exists() ? checkRemote(snapshot.data()) : null;
     const local = encode(bridge.read());
     const base = meta?.uid === currentUser ? meta.base : null;
-    const action = decide(base, local, remote?.payload ?? null);
+    let action = decide(base, local, remote?.payload ?? null);
+    let uploadPayload = local;
+    let mergedPayload = null;
+    if (action === 'conflict' && base !== null && remote) {
+      mergedPayload = mergeThreeWay(base,local,remote.payload);
+      if (mergedPayload !== null) {
+        if (mergedPayload === remote.payload) action='download';
+        else if (mergedPayload === local) action='upload';
+        else { action='upload'; uploadPayload=mergedPayload; }
+      }
+    }
     if (action === 'conflict') {
       conflict = {remote, local, downloaded:false};
       status('Sincronização pausada: existem versões diferentes.'); return;
@@ -169,11 +179,17 @@ async function sync() {
         const latest = await tx.get(ref);
         const d = latest.exists() ? checkRemote(latest.data()) : null;
         if (!active || disabled || !allowed || user?.uid !== currentUser || (d?.revision ?? 0) !== (remote?.revision ?? 0) || (d?.payload ?? null) !== (remote?.payload ?? null)) throw Error('Outra alteração chegou durante o envio. Tente sincronizar novamente.');
-        tx.set(ref, {schemaVersion:1, uid:currentUser, revision, payload:local, updatedAt:sdk.serverTimestamp()});
+        tx.set(ref, {schemaVersion:1, uid:currentUser, revision, payload:uploadPayload, updatedAt:sdk.serverTimestamp()});
       });
-      persist({...meta, base:local, revision});
+      // Após a transação confirmada, aplica a união sem sobrescrever alterações
+      // locais feitas enquanto a gravação estava em andamento.
+      if (mergedPayload !== null && uploadPayload !== local && encode(bridge.read())===local) {
+        backup('before-auto-merge');
+        bridge.replace(validateData(JSON.parse(uploadPayload)));
+      }
+      persist({...meta, base:uploadPayload, revision});
     }
-    if (encode(bridge.read()) === meta.base) status('Sincronizado. As próximas alterações serão enviadas à sua conta.');
+    if (encode(bridge.read()) === meta.base) status('Sincronizado automaticamente. Seus dados estão atualizados.');
     else { status('Há novas alterações locais aguardando envio.'); setTimeout(() => void sync(), 0); }
   } catch (e) { error(e); }
   finally { busy = false; }
