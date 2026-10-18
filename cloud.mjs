@@ -55,7 +55,7 @@ function paint() {
   const conflictMarkup = conflict ? '<div class="cloud-conflict"><p>Há versões diferentes neste aparelho e na nuvem. Nenhuma foi substituída. Baixe as duas cópias antes de escolher qual manter.</p><button class="btn tiny" data-cloud="copies">Baixar as duas versões</button><button class="btn tiny ghost" data-cloud="remote">Usar versão da nuvem</button><button class="btn tiny ghost" data-cloud="local">Usar versão deste aparelho</button></div>' : '';
   panel.innerHTML = '<div class="cloud-card"><div><strong>Sincronização entre aparelhos</strong><p role="status" aria-live="polite">'+escape(message)+'</p>'+(user && allowed ? '<small>'+escape(user.email)+'</small>' : '')+'</div><div class="cloud-actions">'+actions+(allowed?'<button class="btn tiny ghost" data-cloud="restore">Restaurar backup</button>':'')+'</div>'+admin+conflictMarkup+'</div>';
 }
-function status(text) { message = text; paint(); }
+function status(text) { message = text; const node=panel.querySelector('.cloud-card [role="status"]'); if(node)node.textContent=text; else paint(); }
 function authSignal(detail){window.dispatchEvent(new CustomEvent('nexo:auth',{detail}))}
 function download(value, name) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], {type:'application/json'}));
@@ -94,7 +94,7 @@ async function setup() {
     const generation=++authGeneration;
     stop(); allowed=false; user=next;
     invitationRows=[];meta=null;metaStorageKey=null;
-    bridge.deactivateAccount();
+    bridge.deactivateAccount();paint();
     if (!next) {
       authSignal({signedIn:false});
       status('Entre com sua conta Google. O acesso é restrito a pessoas convidadas.');
@@ -116,6 +116,7 @@ async function setup() {
       bridge.activateAccount(next.uid,isAdmin());
       loadMeta(next.uid,isAdmin());
       allowed=true;
+      paint();
       authSignal({signedIn:true});
       if (meta?.uid === next.uid && meta?.consent === true && !disabled) start();
       else status('Login autorizado. Seus dados estão neste aparelho. Ative a sincronização se desejar.');
@@ -132,7 +133,7 @@ async function setup() {
 function reference() { return sdk.doc(db, 'users', user.uid, 'nexo', 'state'); }
 function start() {
   if (disabled || !allowed || !user) return;
-  stop(); active = true;
+  stop(); active = true;paint();
   unsubscribe = sdk.onSnapshot(reference(), {includeMetadataChanges:true}, snap => {
     if (!snap.metadata.fromCache && !snap.metadata.hasPendingWrites) void sync();
   }, error);
