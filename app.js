@@ -292,9 +292,19 @@ window.addEventListener('nexo:auth',event=>{
 document.getElementById('nexo-google-login').addEventListener('click',()=>{
  const button=document.querySelector('#cloud-panel [data-cloud="login"],#cloud-panel [data-cloud="connect"]');
  if(button)button.click();
- else welcomeStatus.textContent='Aguarde a inicialização do login Google e tente novamente.';
+ else {welcomeStatus.textContent='Reiniciando o login Google…';import('./cloud.mjs?v=28').catch(()=>{welcomeStatus.textContent='Não foi possível iniciar o login. Verifique a internet e reabra o NEXO.'})}
 });
-import('./cloud.mjs?v=25').catch(error=>{
+const loginWatchdog=setTimeout(()=>{
+ const button=document.getElementById('nexo-google-login');
+ if(button?.disabled){
+  button.disabled=false;
+  welcomeStatus.textContent='O login está demorando. Toque em Continuar com Google para tentar novamente.';
+ }
+},12000);
+window.addEventListener('nexo:auth',event=>{
+ if(event.detail?.signedIn||event.detail?.error||event.detail?.loading===false)clearTimeout(loginWatchdog);
+});
+import('./cloud.mjs?v=28').catch(error=>{
  const panel=document.getElementById('cloud-panel');
  if(panel)panel.textContent='Não foi possível carregar o login Google. Seus dados continuam salvos neste dispositivo. '+error.message;
  window.dispatchEvent(new CustomEvent('nexo:auth',{detail:{error:'Login indisponível. Verifique a internet e tente novamente.'}}));
