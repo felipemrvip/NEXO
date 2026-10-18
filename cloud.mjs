@@ -155,6 +155,12 @@ async function sync() {
     let action = decide(base, local, remote?.payload ?? null);
     let uploadPayload = local;
     let mergedPayload = null;
+    // Em um aparelho novo, sem base anterior e sem lançamentos locais,
+    // é seguro carregar os dados existentes da nuvem automaticamente.
+    if (action === 'conflict' && base === null && remote &&
+        bridge.read().transactions.length===0 && bridge.read().clients.length===0 &&
+        bridge.read().jobs.length===0 && bridge.read().cards.length===0 &&
+        bridge.read().openingBalance===0) action='download';
     if (action === 'conflict' && base !== null && remote) {
       mergedPayload = mergeThreeWay(base,local,remote.payload);
       if (mergedPayload !== null) {
