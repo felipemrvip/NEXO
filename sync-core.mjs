@@ -45,3 +45,41 @@ export function checkRemote(doc) {
   if (encode(data) !== doc.payload) throw Error('Formato da nuvem incompatível.');
   return doc;
 }
+
+const recordTypes = ['transactions','clients','jobs','cards'];
+function equalRecord(a,b){return JSON.stringify(sorted(a))===JSON.stringify(sorted(b));}
+/**
+ * Mescla de três vias: alterações independentes são combinadas; edições
+ * concorrentes do mesmo registro exigem intervenção humana.
+ * Exclusões não são revertidas automaticamente.
+ */
+export function mergeThreeWay(basePayload, localPayload, remotePayload){
+  if(typeof basePayload!=='string'||typeof localPayload!=='string'||typeof remotePayload!=='string')return null;
+  let base,local,remote;
+  try{
+    base=validateData(JSON.parse(basePayload));
+    local=validateData(JSON.parse(localPayload));
+    remote=validateData(JSON.parse(remotePayload));
+  }catch{return null;}
+  const result={};
+  for(const kind of recordTypes){
+    const b=new Map(base[kind].map(x=>[x.id,x]));
+    const l=new Map(local[kind].map(x=>[x.id,x]));
+    const r=new Map(remote[kind].map(x=>[x.id,x]));
+    const ids=new Set([...b.keys(),...l.keys(),...r.keys()]);
+    const merged=[];
+    for(const id of ids){
+      const old=b.get(id), left=l.get(id), right=r.get(id);
+      const leftChanged=!equalRecord(left,old),rightChanged=!equalRecord(right,old);
+      if(leftChanged&&rightChanged&&!equalRecord(left,right))return null;
+      const winner=leftChanged?left:right;
+      if(winner!==undefined)merged.push(winner);
+    }
+    result[kind]=merged;
+  }
+  const leftBalance=local.openingBalance!==base.openingBalance;
+  const rightBalance=remote.openingBalance!==base.openingBalance;
+  if(leftBalance&&rightBalance&&local.openingBalance!==remote.openingBalance)return null;
+  result.openingBalance=leftBalance?local.openingBalance:remote.openingBalance;
+  try{return encode(result);}catch{return null;}
+}
