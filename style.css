@@ -648,3 +648,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nubank-brand-lettering{display:block!important;color:#fff!important;font-size:22px!important;line-height:1!important;font-weight:900!important;letter-spacing:-2px!important;text-transform:none!important;margin:0!important;font-family:system-ui,-apple-system,sans-serif}
 .card-due-date{display:inline-flex;align-items:center;gap:6px}
 .card-date-svg{width:15px;height:15px;display:inline-block;flex:none}
+
+/* v35: símbolo vetorial Nubank em branco sobre roxo */
+.card-nubank .card-invoice-brand .nubank-brand-logo{display:block;width:39px;height:39px;max-width:70%;max-height:70%;object-fit:contain;filter:none}
