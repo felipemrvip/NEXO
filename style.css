@@ -549,3 +549,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
  .cards-section .actions{width:100%}
  .cards-section .actions button{flex:1;font-size:12px;padding:10px}
 }
+
+/* v28: Ícone de boas-vindas com reserva visual */
+.welcome-brand-icon-frame{display:grid;place-items:center;width:104px;height:104px;flex:0 0 104px}
+.welcome-brand-icon-frame .welcome-brand-icon{grid-area:1/1;width:104px;height:104px;object-fit:contain}
+.welcome-icon-fallback{grid-area:1/1;display:grid;place-items:center;width:82px;height:82px;border-radius:24px;background:linear-gradient(135deg,#ffa75b,#eb792f);font-size:55px;font-weight:900;color:#16110d}
+.welcome-icon-fallback[hidden]{display:none!important}
+@media(max-height:720px){.welcome-brand-icon-frame{width:82px;height:82px;flex-basis:82px}.welcome-brand-icon-frame .welcome-brand-icon{width:82px;height:82px}}

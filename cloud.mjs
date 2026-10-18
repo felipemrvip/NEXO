@@ -81,11 +81,12 @@ async function setup() {
   if (sdk) return;
   authSignal({loading:true});
   status('Preparando login seguro…');
-  const [app, a, f] = await Promise.all([
+  const sdkTimeout = new Promise((_,reject)=>setTimeout(()=>reject(Error('Tempo limite ao carregar serviços do Google. Verifique sua conexão e tente novamente.')),15000));
+  const [app, a, f] = await Promise.race([Promise.all([
     import('https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js'),
     import('https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js'),
     import('https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js')
-  ]);
+  ]),sdkTimeout]);
   sdk = {...a, ...f};
   const firebase = app.initializeApp({apiKey:'AIzaSyCQUjyPVXoLcpdeaIWMTyhCP_s5bp7uiLk',authDomain:'nexo-4142e.firebaseapp.com',projectId:'nexo-4142e',appId:'1:554390559654:web:72b2b6c5e1d26108a50d67'});
   auth = a.getAuth(firebase); db = f.getFirestore(firebase);
