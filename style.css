@@ -485,3 +485,67 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .invite-state{font-size:11px;color:#c7cbd2}
 .invite-row .btn{min-height:36px}
 @media(max-width:520px){.invite-row{flex-wrap:wrap}.invite-row .btn{margin-left:auto}.invite-form-row{flex-wrap:wrap}.invite-form-row button{flex:1}}
+
+
+/* Cartões — visual profissional e lista compacta (v27) */
+.cards-overview{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(125deg,#28211e,#171b21 68%);border:1px solid rgba(244,133,60,.22);border-radius:22px;padding:25px 27px;margin:10px 0 24px}
+.cards-overview-label,.card-invoice-label{display:block;font-size:10px;font-weight:800;letter-spacing:1.7px;color:#b3a69f}
+.cards-overview-value{font-size:clamp(29px,5vw,43px);font-weight:800;letter-spacing:-1.3px;margin:8px 0}
+.cards-overview-caption{color:#9da3ad;font-size:12px}
+.cards-overview-symbol{font-size:43px;color:#d7864e;opacity:.6}
+.cards-section{gap:12px;flex-wrap:wrap}
+.cards-section .actions{gap:9px}
+.card-invoice{border:1px solid #303641;border-radius:22px;background:linear-gradient(155deg,#1b2028,#14181e);padding:22px;margin:16px 0 20px;overflow:hidden}
+.card-invoice-header,.card-invoice-identity,.card-invoice-info,.card-invoice-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-invoice-identity{justify-content:flex-start;min-width:0}
+.card-invoice-identity h2{margin:0;font-size:17px;letter-spacing:-.3px}
+.card-invoice-identity span:not(.card-invoice-brand){display:block;font-size:12px;color:#9fa6b1;margin-top:4px;text-transform:capitalize}
+.card-invoice-brand{display:grid;place-items:center;flex:0 0 43px;height:43px;border-radius:13px;background:#402532;color:#e7b3c6;font-size:22px}
+.card-invoice-status{font-size:11px;font-weight:750;color:#ffc08e;background:#4a2d21;padding:7px 10px;border-radius:30px;white-space:nowrap}
+.card-invoice-status.is-paid{background:#1d3b30;color:#a3e3bd}
+.card-invoice-summary{margin-top:19px;padding:20px;background:#11161c;border:1px solid #2c333d;border-radius:16px}
+.card-invoice-value{display:block;font-size:clamp(27px,5vw,37px);letter-spacing:-1px;margin:6px 0 12px}
+.card-invoice-info{font-size:12px;color:#aeb5c0;flex-wrap:wrap}
+.card-purchases{margin-top:23px}
+.card-purchase-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-purchase-head h3{margin:0 0 3px;font-size:16px}
+.card-purchase-head span{color:#959daa;font-size:11px}
+.card-purchase-count{text-align:right}
+.card-purchase-tools{display:flex;gap:8px;margin:14px 0 5px}
+.card-search-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:0;border:1px solid #363e49;background:#10151b;border-radius:11px;padding:0 11px;color:#aab1bb}
+.card-search-wrap input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f5f6f7;padding:11px 0;font-size:13px}
+.card-purchase-tools select{max-width:42%;border:1px solid #363e49;background:#10151b;color:#d7dce4;border-radius:11px;padding:9px;font-size:12px}
+.card-purchase-row{display:flex;align-items:center;gap:12px;padding:13px 1px;border-bottom:1px solid #2a3038;min-width:0}
+.card-purchase-icon{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;background:#29313a;color:#c8d1dc;font-size:19px}
+.card-kind-refund,.card-kind-payment{background:#1b3a31;color:#7cdbad}
+.card-kind-market{background:#3a3027;color:#f0b274}
+.card-kind-digital{background:#292e43;color:#a7b5ff}
+.card-kind-health{background:#382b38;color:#f3add8}
+.card-purchase-main{flex:1;min-width:0}
+.card-purchase-main>strong{display:block;font-size:13px;font-weight:650;overflow-wrap:anywhere;line-height:1.4}
+.card-purchase-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;color:#929ba7;font-size:11px;margin-top:5px}
+.card-category,.card-installment{background:#293039;padding:2px 7px;border-radius:5px;color:#b6c0ca}
+.card-installment{background:#392e25;color:#eeb17e}
+.card-purchase-amount{font-size:13px;white-space:nowrap;align-self:center;font-variant-numeric:tabular-nums}
+.card-purchase-amount.card-credit{color:#8adbb1}
+.card-show-more{width:100%;border:1px solid #373e49;background:#222831;color:#f2b17b;padding:12px;border-radius:11px;margin-top:14px;font-size:12px;font-weight:750}
+.card-invoice-footer{justify-content:flex-end;margin-top:18px}
+.card-invoice-footer .actions{gap:8px}
+.card-invoice-footer button{border:1px solid #3a414b;background:#262d36;color:#e1e4e9;border-radius:9px;padding:9px 11px;font-size:12px}
+.card-invoice-footer button.delete{color:#ff928b}
+@media(max-width:580px){
+ .cards-overview{padding:21px}
+ .card-invoice{padding:16px;border-radius:18px}
+ .card-invoice-header{align-items:flex-start}
+ .card-invoice-status{font-size:10px}
+ .card-invoice-summary{padding:17px}
+ .card-purchase-head{flex-direction:column;gap:4px}
+ .card-purchase-count{text-align:left}
+ .card-purchase-row{gap:9px}
+ .card-purchase-icon{flex-basis:33px;height:33px;font-size:17px}
+ .card-purchase-amount{font-size:12px}
+ .card-invoice-footer .actions{width:100%;justify-content:flex-start}
+ .card-invoice-footer button{flex:1}
+ .cards-section .actions{width:100%}
+ .cards-section .actions button{flex:1;font-size:12px;padding:10px}
+}
