@@ -617,3 +617,24 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .card-kind-health{background:#3b2a35;color:#e6a8c9}
 .card-kind-other{background:#2a333c;color:#aebdcc}
 @media(max-width:600px){.card-vector-icon{width:18px;height:18px}}
+
+
+/* v31 — identidade Nubank e marcas dos estabelecimentos */
+.card-invoice.card-nubank{border-color:#57366f;background:linear-gradient(160deg,#251b31 0%,#1c1e29 42%,#171a22 100%);box-shadow:inset 0 1px 0 #8250a32b}
+.card-nubank .card-invoice-brand{background:linear-gradient(140deg,#9c55d0,#6d269b);color:white;font-size:19px;font-weight:900;letter-spacing:-1.5px}
+.card-nubank .card-invoice-summary{background:linear-gradient(120deg,#2d1a3f,#18131f);border-color:#5e3678}
+.card-nubank .card-invoice-label{color:#c4a5dc}
+.card-nubank .card-invoice-status:not(.is-paid){background:#503057;color:#efc7ff}
+.card-nubank .card-purchase-head h3{color:#f3e9fa}
+.card-nubank .card-show-more{color:#e2b7ff;border-color:#65467b;background:#31233c}
+.card-nubank .card-purchase-tools input:focus,.card-nubank .card-purchase-tools select:focus{outline:1px solid #aa73d0}
+.card-merchant-logo{position:relative;display:grid;place-items:center;width:100%;height:100%;border-radius:9px;overflow:hidden}
+.card-merchant-logo img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;padding:5px;box-sizing:border-box;background:#f8f8fb;border-radius:9px}
+.card-merchant-fallback{position:absolute;inset:0;display:grid;place-items:center}
+.card-merchant-fallback[hidden]{display:none!important}
+.card-purchase-icon:has(.card-merchant-logo){background:#f8f8fb;color:#36313e;padding:0}
+.nubank-import-logo{background:#71349b;color:#fff;font-weight:850}
+.nubank-import-total{background:linear-gradient(135deg,#3b2052,#1c1727);border-color:#66427e}
+.nubank-import-total>span{color:#d6b9e7}
+.nubank-import-stats>div{border-color:#46384f;background:#2b2233}
+.nubank-import-row .card-purchase-icon:has(.card-merchant-logo){background:#f8f8fb}
