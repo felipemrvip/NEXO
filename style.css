@@ -651,3 +651,17 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* v35: símbolo vetorial Nubank em branco sobre roxo */
 .card-nubank .card-invoice-brand .nubank-brand-logo{display:block;width:39px;height:39px;max-width:70%;max-height:70%;object-fit:contain;filter:none}
+
+
+/* v36 — iOS PWA: manter marca e ações abaixo da barra de status.
+   Respeita o recorte/notch sem criar uma segunda faixa vazia. */
+@supports (padding-top: env(safe-area-inset-top)) {
+ @media (max-width:900px) {
+  .shell{padding-top:calc(env(safe-area-inset-top,0px) + 18px)}
+  .shell>.top>.brand{min-height:54px}
+ }
+ @media (max-width:400px) {
+  .shell{padding-top:calc(env(safe-area-inset-top,0px) + 14px)}
+ }
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
