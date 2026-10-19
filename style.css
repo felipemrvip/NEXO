@@ -786,3 +786,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
  .herofoot b{overflow-wrap:anywhere}
  .summary-grid>.panel .stat{font-size:clamp(17px,4.4vw,23px)}
 }
+
+/* v47: saldo consolidado, sempre geral; filtros afetam indicadores por área. */
+.hero-global-badge{display:inline-block;vertical-align:middle;margin-left:8px;padding:3px 7px;border:1px solid rgba(255,255,255,.20);border-radius:7px;color:#cbd0d8;font-size:9px;letter-spacing:.7px;font-weight:750}
+@media(max-width:640px){.hero-global-badge{font-size:8px;margin-left:4px}}
