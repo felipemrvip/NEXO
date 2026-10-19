@@ -722,8 +722,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nexo-motion>.dashboard>.analytics-grid,.nexo-motion>.panel,.nexo-motion>.card-invoice{animation:nexo-panel-reveal .62s cubic-bezier(.22,1,.36,1) .22s both}
 .nexo-motion>.dashboard>.wide:last-of-type,.nexo-motion>.listcard{animation:nexo-panel-reveal .58s cubic-bezier(.22,1,.36,1) .3s both}
 .nexo-motion .hero .amount,.nexo-motion .stat,.nexo-motion .cards-overview-value{font-variant-numeric:tabular-nums}
-.nexo-motion .donut circle[stroke-dasharray]{transform-box:fill-box;transform-origin:center;animation:nexo-donut-reveal .95s cubic-bezier(.22,1,.36,1) both}
-@keyframes nexo-donut-reveal{from{opacity:0;stroke-dasharray:0 999}to{opacity:1}}
+.nexo-motion .donut circle[stroke-dasharray]{animation:nexo-donut-reveal .8s ease-out .16s both}
+@keyframes nexo-donut-reveal{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.nexo-motion>*,.nexo-motion .donut circle[stroke-dasharray]{animation:none!important}.nexo-motion svg.chart path{transition:none!important}}
 
 
@@ -790,3 +790,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 /* v47: saldo consolidado, sempre geral; filtros afetam indicadores por área. */
 .hero-global-badge{display:inline-block;vertical-align:middle;margin-left:8px;padding:3px 7px;border:1px solid rgba(255,255,255,.20);border-radius:7px;color:#cbd0d8;font-size:9px;letter-spacing:.7px;font-weight:750}
 @media(max-width:640px){.hero-global-badge{font-size:8px;margin-left:4px}}
+
+/* v48: animações exclusivas das mudanças de tela, sem sobreposição legada. */
+.nexo-motion>.dashboard>.analytics-grid .panel{min-width:0}
+.nexo-motion .hero .amount,.nexo-motion .herofoot b,.nexo-motion .stat,.nexo-motion .card-invoice-value{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){.nexo-motion .donut circle[stroke-dasharray]{animation:none!important}}
