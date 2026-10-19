@@ -1,5 +1,5 @@
-const CACHE='nexo-pwa-v51';
-const ASSETS=['./','./index.html','./style.css?v=51','./app.js?v=51','./cloud.mjs?v=51','./sync-core.mjs?v=51','./icons/icon-180.png?v=22','./icons/icon-192.png?v=22','./icons/icon-512.png?v=22','./icons/logo-nexo.webp?v=28','./icons/favicon-32.png?v=22','./manifest.webmanifest?v=22','./icons/brands/nubank-white.svg?v=35'];
+const CACHE='nexo-pwa-v52';
+const ASSETS=['./','./index.html','./style.css?v=52','./app.js?v=52','./cloud.mjs?v=52','./sync-core.mjs?v=52','./icons/icon-180.png?v=22','./icons/icon-192.png?v=22','./icons/icon-512.png?v=22','./icons/logo-nexo.webp?v=28','./icons/favicon-32.png?v=22','./manifest.webmanifest?v=22','./icons/brands/nubank-white.svg?v=35'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('nexo-pwa-')&&key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
 self.addEventListener('fetch',event=>{
