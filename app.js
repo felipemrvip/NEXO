@@ -247,10 +247,10 @@ function nexoAnimateNumbers(shell){
  const amounts=[];
  for(const el of nodes){
   const original=el.textContent.trim();
-  const isMoney=/^-?\\s*R\\$\\s*[\\d.]+,\\d{2}$/.test(original);
-  const isCount=/^\\d{1,6}$/.test(original);
+  const isMoney=/^-?\s*R\$\s*[\d.]+,\d{2}$/.test(original);
+  const isCount=/^\d{1,6}$/.test(original);
   if(!isMoney&&!isCount)continue;
-  const value=isMoney?Number(original.replace(/[^\\d,-]/g,'').replace(',','.')):Number(original);
+  const value=isMoney?Number(original.replace(/[^\d,-]/g,'').replace(',','.')):Number(original);
   if(!Number.isFinite(value))continue;
   el.setAttribute('aria-label',original);
   amounts.push({el,value,isMoney,original});
