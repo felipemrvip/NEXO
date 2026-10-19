@@ -243,18 +243,16 @@ let nexoMotionPage='';
 const nexoMoneyFormat=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const nexoIntegerFormat=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
 function nexoParseAnimatedValue(text){
- const original=String(text||'').trim();
- // Evitar regex fragil: aceita R$ 1.234,56 e -R$ 1.234,56.
- const normalized=original.replace(/\\s/g,'').replace('−','-');
- if(normalized.includes('R$')){
-  const negative=normalized.startsWith('-');
-  const digits=normalized.replace('-','').replace('R$','');
-  const pieces=digits.split(',');
-  if(pieces.length!==2||pieces[1].length!==2||!pieces[0]||!pieces[0].split('.').every(p=>p&&[...p].every(c=>c>='0'&&c<='9'))||![...pieces[1]].every(c=>c>='0'&&c<='9'))return null;
-  const value=Number(pieces[0].replaceAll('.','')+'.'+pieces[1])*(negative?-1:1);
+ const original=String(text??'').trim();
+ // Intl.NumberFormat('pt-BR') utiliza espaco nao separavel (U+00A0).
+ const currency=original.match(/^([−-]?)\s*R\$\s*([\d.]+),(\d{2})$/u);
+ if(currency){
+  const whole=currency[2];
+  if(!/^\d{1,3}(?:\.\d{3})*$|^\d+$/u.test(whole))return null;
+  const value=Number(whole.replaceAll('.','')+'.'+currency[3])*(currency[1]?-1:1);
   return Number.isFinite(value)?{value,isMoney:true,original}:null;
  }
- if(original.length>0&&original.length<=6&&[...original].every(c=>c>='0'&&c<='9'))return {value:Number(original),isMoney:false,original};
+ if(/^\d{1,6}$/u.test(original))return {value:Number(original),isMoney:false,original};
  return null;
 }
 function nexoAnimateNumbers(shell){
