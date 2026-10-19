@@ -695,3 +695,20 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 }
 
 .nexo-loading-text{display:inline-flex;align-items:center;justify-content:center;gap:9px}.nexo-loading-spinner{display:inline-block;width:15px;height:15px;border:2px solid #ffffff45;border-top-color:#ff9b52;border-radius:50%;animation:nexo-spin .75s linear infinite}@media(prefers-reduced-motion:reduce){.nexo-loading-spinner{animation:none;border-top-color:#ff9b52}}
+
+
+/* v38: sincronização visível e transições perceptíveis em cada aba */
+.nexo-sync-indicator{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;border:1px solid #53505b;background:#292b34;color:#e0dfe4;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.nexo-sync-dot{width:7px;height:7px;flex:none;border-radius:50%;background:#ffb75f}
+.nexo-sync-indicator[data-sync-phase="synced"]{border-color:#315c48;color:#b1f1d0;background:#172d25}
+.nexo-sync-indicator[data-sync-phase="synced"] .nexo-sync-dot{background:#70db9d}
+.nexo-sync-indicator[data-sync-phase="syncing"] .nexo-sync-dot{background:#b7a4ff;animation:nexo-pulse 1.15s ease-in-out infinite}
+.nexo-sync-indicator[data-sync-phase="conflict"],.nexo-sync-indicator[data-sync-phase="paused"]{border-color:#99534c;background:#392322;color:#ffb4a9}
+.nexo-sync-indicator[data-sync-phase="conflict"] .nexo-sync-dot,.nexo-sync-indicator[data-sync-phase="paused"] .nexo-sync-dot{background:#ff786c}
+.nexo-sync-indicator[data-sync-phase="offline"] .nexo-sync-dot{background:#a5aab3}
+@keyframes nexo-pulse{50%{opacity:.3;transform:scale(.8)}}
+.cloud-sync-details{display:block;margin-top:6px;color:#aeb8c4}
+.nexo-view-enter>.head,.nexo-view-enter>.hero,.nexo-view-enter>.grid2,.nexo-view-enter>.dashboard,.nexo-view-enter>.cards-overview,.nexo-view-enter>.card-invoice,.nexo-view-enter>.section,.nexo-view-enter>.panel,.nexo-view-enter>.listcard{animation:nexo-fade-up .36s cubic-bezier(.2,.8,.2,1) both}
+.nexo-view-enter>.grid2,.nexo-view-enter>.dashboard,.nexo-view-enter>.cards-overview,.nexo-view-enter>.section{animation-delay:55ms}
+@media(max-width:900px){.shell>.top>.topactions .nexo-sync-indicator{grid-column:1/-1;min-height:37px;justify-self:stretch}}
+@media(prefers-reduced-motion:reduce){.nexo-view-enter>*,.nexo-sync-dot{animation:none!important}}
