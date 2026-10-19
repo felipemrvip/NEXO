@@ -1,4 +1,4 @@
-import {encode, validateData, decide, checkRemote, mergeThreeWay} from './sync-core.mjs';
+import {encode, validateData, decide, checkRemote, mergeThreeWay} from './sync-core.mjs?v=39';
 
 const LEGACY_META = 'nexo-cloud-v1';
 const META_PREFIX = 'nexo-cloud-v2-user-';
