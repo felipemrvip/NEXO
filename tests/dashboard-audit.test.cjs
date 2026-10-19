@@ -86,3 +86,37 @@ test('centavos nao acumulam erro de ponto flutuante',()=>{
  assert.equal(metrics().income,0.3);
  assert.equal(metrics().availableAfterCards,0.3);
 });
+
+test('conta pendente aparece no total a pagar sem descontar caixa',()=>{
+ const {data,metrics}=fixture();
+ data.transactions.push({id:'bill',name:'Aluguel',amount:600,kind:'out',scope:'pessoal',paid:false});
+ assert.equal(metrics().unpaidBills,600);
+ assert.equal(metrics().paidBills,100);
+ assert.equal(metrics().availableAfterCards,3900);
+});
+test('marcar conta pendente como paga desconta uma vez do saldo',()=>{
+ const {data,metrics}=fixture();
+ const bill={id:'bill',name:'Internet',amount:50,kind:'out',scope:'pessoal',paid:false};
+ data.transactions.push(bill);
+ assert.equal(metrics().availableAfterCards,3900);
+ bill.paid=true;
+ assert.equal(metrics().unpaidBills,0);
+ assert.equal(metrics().paidBills,150);
+ assert.equal(metrics().availableAfterCards,3850);
+ bill.paid=true;
+ assert.equal(metrics().availableAfterCards,3850);
+});
+test('voltar conta a pendente repoe valor no saldo sem duplicar',()=>{
+ const {data,metrics}=fixture();
+ const bill={id:'bill',amount:110,kind:'out',scope:'pessoal',paid:true};
+ data.transactions.push(bill);
+ assert.equal(metrics().availableAfterCards,3790);
+ bill.paid=false;
+ assert.equal(metrics().availableAfterCards,3900);
+ assert.equal(metrics().unpaidBills,110);
+});
+test('lancamentos antigos sem paid continuam quitados',()=>{
+ const {metrics}=fixture();
+ assert.equal(metrics().paidBills,100);
+ assert.equal(metrics().unpaidBills,0);
+});

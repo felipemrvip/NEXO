@@ -795,3 +795,28 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nexo-motion>.dashboard>.analytics-grid .panel{min-width:0}
 .nexo-motion .hero .amount,.nexo-motion .herofoot b,.nexo-motion .stat,.nexo-motion .card-invoice-value{font-variant-numeric:tabular-nums}
 @media(prefers-reduced-motion:reduce){.nexo-motion .donut circle[stroke-dasharray]{animation:none!important}}
+
+
+/* v49 — controles de pagamentos, espacamento dos trabalhos e menu editavel */
+.nexo-transaction-status{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:9px;background:#233a2e;color:#88e0b2;font-size:11px;font-weight:750}
+.nexo-transaction-status:has(+ .actions) {margin-bottom:4px}
+.nexo-pending-overview{margin:23px 0 26px;border-color:#6a3339}
+.nexo-pending-overview .stat{font-size:24px}
+.nexo-bills-summary{align-items:stretch}
+.nexo-bills-summary .panel{min-height:146px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px}
+.nexo-bills-summary .stat{margin:0;font-size:clamp(19px,2.4vw,27px)}
+.nexo-bills-summary button{margin-top:4px}
+.job-group .listcard>.row{gap:15px;flex-wrap:wrap}
+.job-group .listcard>.row + .row{margin-top:15px}
+.job-group .listcard>.row .actions{gap:12px;row-gap:10px;flex-wrap:wrap}
+.job-group .listcard>.row .actions button{min-height:36px}
+.job-group .listcard>.row:last-child{padding-top:14px;margin-top:18px;border-top:1px solid rgba(255,255,255,.08)}
+.nav .nexo-nav-settings{margin-top:11px;border:1px dashed rgba(255,255,255,.16);color:#a8afba;background:rgba(255,255,255,.025);font-size:12px}
+.nav .nexo-nav-settings .nexo-nav-settings-label{font-weight:650}
+.nexo-nav-editor{display:grid;gap:10px;margin:20px 0}
+.nexo-nav-editor-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid #343943;border-radius:12px;background:#1c222a;gap:12px}
+.nexo-nav-editor-row>span{display:inline-flex;gap:9px;align-items:center}
+.nexo-nav-editor-row .actions{gap:10px}
+.nexo-nav-editor-row .actions button{min-width:40px;font-size:18px}
+@media(max-width:900px){.nav .nexo-nav-settings{flex:0 0 44px;margin-top:0;padding:7px 4px}.nav .nexo-nav-settings-label{display:none}}
+@media(max-width:640px){.job-group .listcard>.row{align-items:flex-start}.job-group .listcard>.row .actions{gap:10px}.nexo-bills-summary .panel{min-height:110px;padding:17px 15px}}
