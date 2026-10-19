@@ -14,7 +14,16 @@ export function validateData(value) {
       if (kind !== 'clients' && (!Number.isFinite(x.amount) || x.amount < 0)) throw Error('Valor inválido.');
       if (kind === 'transactions' && (!['in','out'].includes(x.kind) || !['pessoal','profissional'].includes(x.scope) || (x.date != null && typeof x.date !== 'string'))) throw Error('Movimentação inválida.');
       if (kind === 'clients' && x.contact != null && typeof x.contact !== 'string') throw Error('Contato inválido.');
-      if (kind === 'jobs' && (!Number.isFinite(x.progress) || x.progress < 0 || x.progress > 100 || typeof x.clientId !== 'string')) throw Error('Trabalho inválido.');
+      if (kind === 'jobs') {
+        // O NEXO atual usa paidAmount/status; versões antigas podiam ter progress.
+        // Ambos são opcionais para não rejeitar dados existentes entre dispositivos.
+        // Não acrescentar campos ou converter valores: isso preserva os hashes usados
+        // pela sincronização e evita conflitos artificiais na nuvem.
+        if (typeof x.clientId !== 'string' ||
+            (x.paidAmount != null && (!Number.isFinite(x.paidAmount) || x.paidAmount < 0 || Math.round(x.paidAmount * 100) > Math.round(x.amount * 100))) ||
+            (x.progress != null && (!Number.isFinite(x.progress) || x.progress < 0 || x.progress > 100)) ||
+            (x.status != null && typeof x.status !== 'string')) throw Error('Trabalho inválido.');
+      }
       if (kind === 'cards' && (typeof x.paid !== 'boolean' || typeof x.due !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(x.due))) throw Error('Cartão inválido.');
     }
   }
