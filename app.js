@@ -276,15 +276,14 @@ function nexoToast(message){
  clearTimeout(nexoToastTimer);
  nexoToastTimer=setTimeout(()=>toast.classList.remove('is-visible'),2300);
 }
-// v42: animações de apresentação isoladas dos dados e da sincronização.
+// v48 — animações estáveis, disparadas por navegação e nunca por sincronização.
 let nexoMotionFrame=0;
-let nexoMotionSignature='';
-let nexoMotionPage='';
+let nexoMotionChartFrame=0;
+let nexoMotionViewKey=null;
 const nexoMoneyFormat=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const nexoIntegerFormat=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
 function nexoParseAnimatedValue(text){
  const original=String(text??'').trim();
- // Intl.NumberFormat('pt-BR') utiliza espaco nao separavel (U+00A0).
  const currency=original.match(/^([−-]?)\s*R\$\s*([\d.]+),(\d{2})$/u);
  if(currency){
   const whole=currency[2];
@@ -304,58 +303,66 @@ function nexoAnimateNumbers(shell){
   el.setAttribute('aria-label',item.original);
   amounts.push({...item,el});
  }
- cancelAnimationFrame(nexoMotionFrame);
  if(!amounts.length)return;
- const duration=1150;
- let startTime=null;
- // Os números ficam zerados no primeiro frame, evitando que a contagem
- // comece depois de o valor final já ter sido exibido.
+ const duration=1050;
+ let started=null;
  for(const item of amounts)item.el.textContent=item.isMoney?nexoMoneyFormat.format(0):'0';
  function frame(now){
   if(!shell.isConnected)return;
-  if(startTime===null)startTime=now;
-  const progress=Math.min(1,(now-startTime)/duration);
-  const eased=1-Math.pow(1-progress,3);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+   for(const item of amounts)item.el.textContent=item.original;
+   return;
+  }
+  if(started===null)started=now;
+  const t=Math.min(1,(now-started)/duration);
+  const progress=1-Math.pow(1-t,3);
   for(const item of amounts){
-   if(progress===1){item.el.textContent=item.original;continue}
-   const value=item.value*eased;
+   if(t===1){item.el.textContent=item.original;continue}
+   const value=item.value*progress;
    item.el.textContent=item.isMoney?nexoMoneyFormat.format(value):nexoIntegerFormat.format(Math.round(value));
   }
-  if(progress<1)nexoMotionFrame=requestAnimationFrame(frame);
+  if(t<1)nexoMotionFrame=requestAnimationFrame(frame);
  }
  nexoMotionFrame=requestAnimationFrame(frame);
 }
 function nexoAnimateCharts(shell){
- for(const path of shell.querySelectorAll('svg.chart path')){
+ const paths=[...shell.querySelectorAll('svg.chart path')];
+ for(const path of paths){
   if(typeof path.getTotalLength!=='function')continue;
   const length=path.getTotalLength();
   if(!Number.isFinite(length)||length<=0)continue;
+  path.style.transition='none';
   path.style.strokeDasharray=String(length);
   path.style.strokeDashoffset=String(length);
   path.getBoundingClientRect();
-  path.style.transition='stroke-dashoffset 950ms cubic-bezier(.22,1,.36,1) 140ms';
-  path.style.strokeDashoffset='0';
  }
+ if(!paths.length)return;
+ nexoMotionChartFrame=requestAnimationFrame(()=>{
+  if(!shell.isConnected)return;
+  for(const path of paths){
+   if(!path.style.strokeDasharray)continue;
+   path.style.transition='stroke-dashoffset 900ms cubic-bezier(.22,1,.36,1) 90ms';
+   path.style.strokeDashoffset='0';
+  }
+ });
 }
 function nexoAnimateView(){
  const shell=app.querySelector('.shell');
  if(!shell)return;
- // Render recria o DOM. Sempre cancelar frames do DOM anterior.
  cancelAnimationFrame(nexoMotionFrame);
- if(modal||document.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- const signature=JSON.stringify([activeKey,page,scope,period,
-  data.openingBalance,data.transactions.length,data.jobs.length,data.cards.length,
-  data.transactions.reduce((v,x)=>v+(x.kind==='in'?1:-1)*Number(x.amount||0),0),
-  data.cards.reduce((v,x)=>v+Number(x.amount||0),0),
-  data.jobs.reduce((v,x)=>v+Number(x.paidAmount||0)+Number(x.amount||0),0)]);
- const changed=signature!==nexoMotionSignature||page!==nexoMotionPage;
- if(!changed){
-  // DOM novo precisa exibir valores reais, sem contagem interrompida.
-  return;
- }
- nexoMotionSignature=signature;
- nexoMotionPage=page;
- shell.classList.add('nexo-view-enter','nexo-motion');
+ cancelAnimationFrame(nexoMotionChartFrame);
+ nexoMotionFrame=0;
+ nexoMotionChartFrame=0;
+ // Sem conta: nao executar sobre tela vazia nem durante login.
+ if(!activeKey){nexoMotionViewKey=null;return}
+ const key=JSON.stringify([activeKey,page,scope,period]);
+ const previous=nexoMotionViewKey;
+ nexoMotionViewKey=key;
+ // Na primeira abertura, a nuvem ainda pode substituir os dados locais.
+ // Mostrar os valores reais imediatamente evita piscar/contar duas vezes.
+ if(previous===null||previous===key||modal||document.hidden||
+   window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ shell.classList.add('nexo-motion');
  nexoAnimateNumbers(shell);
  nexoAnimateCharts(shell);
 }
