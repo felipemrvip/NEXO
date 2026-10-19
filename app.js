@@ -244,12 +244,17 @@ const nexoMoneyFormat=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'
 const nexoIntegerFormat=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
 function nexoParseAnimatedValue(text){
  const original=String(text||'').trim();
- const currency=original.match(/^([−-])?\\s*R\\$\\s*([\\d.]+),(\\d{2})$/u);
- if(currency){
-  const value=Number(currency[2].replaceAll('.','')+'.'+currency[3])*(currency[1]?-1:1);
+ // Evitar regex fragil: aceita R$ 1.234,56 e -R$ 1.234,56.
+ const normalized=original.replace(/\\s/g,'').replace('−','-');
+ if(normalized.includes('R$')){
+  const negative=normalized.startsWith('-');
+  const digits=normalized.replace('-','').replace('R$','');
+  const pieces=digits.split(',');
+  if(pieces.length!==2||pieces[1].length!==2||!pieces[0]||!pieces[0].split('.').every(p=>p&&[...p].every(c=>c>='0'&&c<='9'))||![...pieces[1]].every(c=>c>='0'&&c<='9'))return null;
+  const value=Number(pieces[0].replaceAll('.','')+'.'+pieces[1])*(negative?-1:1);
   return Number.isFinite(value)?{value,isMoney:true,original}:null;
  }
- if(/^\\d{1,6}$/.test(original))return {value:Number(original),isMoney:false,original};
+ if(original.length>0&&original.length<=6&&[...original].every(c=>c>='0'&&c<='9'))return {value:Number(original),isMoney:false,original};
  return null;
 }
 function nexoAnimateNumbers(shell){
@@ -306,7 +311,10 @@ function nexoAnimateView(){
   data.cards.reduce((v,x)=>v+Number(x.amount||0),0),
   data.jobs.reduce((v,x)=>v+Number(x.paidAmount||0)+Number(x.amount||0),0)]);
  const changed=signature!==nexoMotionSignature||page!==nexoMotionPage;
- if(!changed)return;
+ if(!changed){
+  // DOM novo precisa exibir valores reais, sem contagem interrompida.
+  return;
+ }
  nexoMotionSignature=signature;
  nexoMotionPage=page;
  shell.classList.add('nexo-view-enter','nexo-motion');
