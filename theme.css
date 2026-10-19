@@ -1,0 +1,326 @@
+
+/* NEXO v54 — modo claro consistente.
+   Escopo isolado: o visual escuro permanece intacto. */
+html[data-theme="light"]{
+ color-scheme:light;
+ --bg:#f5f6f9;--surface:#ffffff;--surface-2:#f9fafc;
+ --stroke:rgba(40,53,71,.13);--ink:#202735;--soft:#687386;
+ --brand:#cf671e;--brand-2:#e68b43;--negative:#d62d42;
+ background:var(--bg);color:var(--ink);
+}
+html[data-theme="light"] body{
+ background:radial-gradient(ellipse 58% 27% at 60% -7%,rgba(249,154,80,.12),transparent 80%),#f5f6f9;
+ color:var(--ink);
+}
+html[data-theme="light"] .top,
+html[data-theme="light"] .job-group-title{border-color:var(--stroke)}
+html[data-theme="light"] .brand .eyebrow,
+html[data-theme="light"] .nav::before,
+html[data-theme="light"] .head-date,
+html[data-theme="light"] .eyebrow{color:#737e90}
+html[data-theme="light"] .head h1,
+html[data-theme="light"] .section h2,
+html[data-theme="light"] .panel h3{color:#202735}
+html[data-theme="light"] .head h1 .orange{color:#c96a26}
+html[data-theme="light"] .muted,
+html[data-theme="light"] .label,
+html[data-theme="light"] .legend,
+html[data-theme="light"] .listcard p,
+html[data-theme="light"] .job-group-title span{color:#697589}
+html[data-theme="light"] .head-kicker,
+html[data-theme="light"] .head .eyebrow{color:#c46925}
+html[data-theme="light"] .topactions .btn{
+ background:#fff!important;color:#39465a!important;
+ border:1px solid #dce2ea!important;box-shadow:0 2px 8px #273b5210;
+}
+html[data-theme="light"] .topactions .btn:hover{
+ background:#f2f5f9!important;border-color:#bdc9d7!important;
+}
+html[data-theme="light"] .topactions .accountbtn{color:#b75c22!important;border-color:#e6cbb6!important}
+html[data-theme="light"] .nexo-theme-toggle{white-space:nowrap}
+html[data-theme="light"] .nav{border-color:#e2e6ec}
+html[data-theme="light"] .nav button{color:#687386}
+html[data-theme="light"] .nav button:hover{color:#222c3c;background:#edf1f6}
+html[data-theme="light"] .nav button.active{
+ color:#a74d18;border-color:#efcfb3;
+ background:linear-gradient(90deg,#fff0e0,#fff8f1);
+ box-shadow:inset 3px 0 0 #e77f30;
+}
+html[data-theme="light"] .nav button.nexo-nav-item.nexo-nav-dragging{
+ color:#a54e18;border-color:#e7a56c;
+ background:linear-gradient(95deg,#ffe4c9,#fff5e9);
+ box-shadow:0 10px 26px #7b5c3330,inset 3px 0 0 #e77f30;
+}
+html[data-theme="light"] .filters{
+ background:#eef1f6;border-color:#dce2eb;
+}
+html[data-theme="light"] .filters button{color:#6c7789}
+html[data-theme="light"] .filters button:hover{background:#e1e7ef;color:#253246}
+html[data-theme="light"] .filters button.active{
+ color:#253043;background:#fff;box-shadow:0 2px 9px #1b2e481a;
+}
+html[data-theme="light"] .hero{
+ background:radial-gradient(circle at 89% 9%,rgba(246,151,69,.17),transparent 38%),
+ radial-gradient(circle at 96% 100%,rgba(248,166,86,.09),transparent 48%),
+ linear-gradient(125deg,#fff7ef,#fffaf5 53%,#fff);
+ border-color:#ebcfb2;box-shadow:0 13px 37px #9b744017,inset 0 1px 0 #fff;
+}
+html[data-theme="light"] .hero::after{
+ border-color:#e9b7805e;
+ box-shadow:0 0 0 54px #f7b2670c,0 0 0 113px #f7b26708;
+}
+html[data-theme="light"] .hero-label{color:#9c592e}
+html[data-theme="light"] .hero .amount{color:#252c37}
+html[data-theme="light"] .herofoot{border-color:#e7d8c9}
+html[data-theme="light"] .herofoot>div,
+html[data-theme="light"] .herofoot>.hero-current-balance{color:#697486}
+html[data-theme="light"] .herofoot b,
+html[data-theme="light"] .herofoot>.hero-current-balance b{color:#263041}
+html[data-theme="light"] .herofoot>div:first-child b{color:#b85e24}
+html[data-theme="light"] .herofoot>div:nth-child(2) b,
+html[data-theme="light"] .herofoot>.hero-card-debt b{color:#cf3045}
+html[data-theme="light"] .hero-global-badge{
+ color:#835733;background:#fff8ef;border-color:#e9c9a8;
+}
+html[data-theme="light"] .balance-edit{
+ color:#63452d;background:#ffffffc9!important;border-color:#e1c9b3;
+}
+html[data-theme="light"] .balance-edit:hover{background:#fff!important;border-color:#dba36d}
+html[data-theme="light"] .hero-toolbar .btn.ghost{
+ background:#fff;color:#694a34;border-color:#e8cbb1;
+}
+html[data-theme="light"] .panel,
+html[data-theme="light"] .listcard{
+ background:linear-gradient(155deg,#fff,#fcfdff);
+ border-color:#e1e6ed;box-shadow:0 5px 20px #1b32400a;
+}
+html[data-theme="light"] .listcard:hover{
+ background:#f9fbfd;border-color:#cad4e0;
+}
+html[data-theme="light"] .listcard strong{color:#273144}
+html[data-theme="light"] .dashboard .grid2 .panel::after{background:#f9a95b13}
+html[data-theme="light"] .stat{color:#263041}
+html[data-theme="light"] .iconbox{color:#bd6529;background:#fff2e7;border-color:#f0d4bb}
+html[data-theme="light"] .progress{background:#e9edf3}
+html[data-theme="light"] .barline{background:#e4e8ef}
+html[data-theme="light"] .btn.ghost{
+ color:#354155;background:#f5f7fa;border-color:#dbe2ea;
+}
+html[data-theme="light"] .btn.ghost:hover{background:#e9eef5;border-color:#c6d1dd}
+html[data-theme="light"] .actions button,
+html[data-theme="light"] .card-invoice-footer button{
+ background:#f1f4f8;border-color:#dbe1e9;color:#364256;
+}
+html[data-theme="light"] .actions button:hover,
+html[data-theme="light"] .card-invoice-footer button:hover{background:#e7edf4}
+html[data-theme="light"] .money-out,
+html[data-theme="light"] .actions .delete,
+html[data-theme="light"] .card-invoice-footer button.delete{color:#d72d43}
+html[data-theme="light"] .money-in{color:#ba6226}
+html[data-theme="light"] .finance-income-panel{
+ background:linear-gradient(155deg,#fff9f1,#fff)!important;border-color:#efdac5!important;
+}
+html[data-theme="light"] .finance-expense-panel{
+ background:linear-gradient(155deg,#fff3f4,#fff)!important;border-color:#f1cbd0!important;
+}
+html[data-theme="light"] .finance-expense-panel .stat{color:#c82d42}
+html[data-theme="light"] .nexo-pending-overview{border-color:#f0c9d0}
+html[data-theme="light"] .empty{
+ background:#fafbfd;border-color:#d7dee8;color:#69778a;
+}
+html[data-theme="light"] .notice{
+ background:#eef3f8;color:#617087;border-color:#dbe4ee;
+}
+html[data-theme="light"] .badge{background:#fff0e0;color:#a65820}
+html[data-theme="light"] .badge.paid,
+html[data-theme="light"] .job-status.paid{
+ background:#e1f4e9;color:#217549;
+}
+html[data-theme="light"] .job-status.pending{background:#fff0de;color:#a15a18}
+html[data-theme="light"] .job-settled{color:#217549}
+html[data-theme="light"] .job-status-control{color:#5c6b7e}
+html[data-theme="light"] .job-status-control select{
+ background:#fff;color:#273143;border-color:#d2dce7;
+}
+html[data-theme="light"] .job-group-title{border-color:#dfe5ed}
+html[data-theme="light"] .job-group-urgente .job-group-title h2{color:#c93843}
+html[data-theme="light"] .job-group-andamento .job-group-title h2{color:#b56826}
+html[data-theme="light"] .job-group-feito .job-group-title h2{color:#258052}
+html[data-theme="light"] .job-empty{border-color:#d6dfe9}
+html[data-theme="light"] .nexo-transaction-status{
+ background:#e5f4eb;color:#267447;
+}
+html[data-theme="light"] .nexo-transaction-status:has(+ .actions){border-color:#c9e8d5}
+html[data-theme="light"] .nexo-bill-history-panel{background:#fff}
+html[data-theme="light"] .nexo-bill-heading,
+html[data-theme="light"] .nexo-bill-row{border-color:#e7ebf0}
+html[data-theme="light"] .nexo-bill-heading h2,
+html[data-theme="light"] .nexo-bill-info strong{color:#273143}
+html[data-theme="light"] .nexo-bill-kicker,
+html[data-theme="light"] .nexo-bill-count,
+html[data-theme="light"] .nexo-bill-meta,
+html[data-theme="light"] .nexo-bill-empty{color:#6c798a}
+html[data-theme="light"] .nexo-bill-paid-amount{color:#273143}
+html[data-theme="light"] .nexo-bill-action{
+ background:#fff1e5;border-color:#efc8a9;color:#a9541a;
+}
+html[data-theme="light"] .nexo-bill-action:hover{background:#ffe4cc}
+html[data-theme="light"] .nexo-bill-undo{
+ background:#f0f3f7;border-color:#d5dde7;color:#4c5a6e;
+}
+html[data-theme="light"] .nexo-bill-undo:hover{background:#e5ebf2}
+html[data-theme="light"] .nexo-bill-list{scrollbar-color:#cbd4df transparent}
+html[data-theme="light"] .chart line[stroke="#363942"]{stroke:#dce3ec}
+html[data-theme="light"] .chart text[fill="#9297a2"]{fill:#657489}
+html[data-theme="light"] .donut circle[stroke="#343741"]{stroke:#e4e9f0}
+html[data-theme="light"] .donut text[fill="#a4a8b2"]{fill:#657489}
+html[data-theme="light"] .donut text[fill="white"]{fill:#253043}
+html[data-theme="light"] .cards-overview{
+ background:linear-gradient(125deg,#fff2e4,#fff 70%);border-color:#efd4bb;
+}
+html[data-theme="light"] .cards-overview-label,
+html[data-theme="light"] .card-invoice-label{color:#906e58}
+html[data-theme="light"] .cards-overview-caption{color:#69778a}
+html[data-theme="light"] .card-invoice{
+ background:linear-gradient(155deg,#fff,#f9fafc);border-color:#dfe5ed;
+}
+html[data-theme="light"] .card-invoice-identity span:not(.card-invoice-brand),
+html[data-theme="light"] .card-invoice-info,
+html[data-theme="light"] .card-purchase-head span,
+html[data-theme="light"] .card-purchase-meta{color:#69778a}
+html[data-theme="light"] .card-invoice-status{background:#fff0e1;color:#a5571e}
+html[data-theme="light"] .card-invoice-status.is-paid{background:#e1f3e9;color:#217549}
+html[data-theme="light"] .card-invoice-summary{
+ background:#f5f7fa;border-color:#dfe5ed;
+}
+html[data-theme="light"] .card-purchase-row{border-color:#e5eaf0}
+html[data-theme="light"] .card-purchase-icon{background:#eef2f7;color:#5c697d}
+html[data-theme="light"] .card-purchase-tools select,
+html[data-theme="light"] .card-search-wrap{
+ background:#fff;border-color:#d7e0ea;color:#526176;
+}
+html[data-theme="light"] .card-search-wrap input{color:#253143}
+html[data-theme="light"] .card-category{background:#edf1f6;color:#56677a}
+html[data-theme="light"] .card-installment{background:#fff0e1;color:#9c561f}
+html[data-theme="light"] .card-purchase-amount.card-credit{color:#1b8555}
+html[data-theme="light"] .card-show-more{
+ background:#fff6ed;border-color:#efd3b9;color:#a4541d;
+}
+html[data-theme="light"] .card-invoice.card-nubank{
+ background:linear-gradient(155deg,#faf3ff,#fff 55%);border-color:#d9b9e8;
+}
+html[data-theme="light"] .card-nubank .card-invoice-summary{
+ background:linear-gradient(125deg,#f5e8fd,#fff);border-color:#e0c4ee;
+}
+html[data-theme="light"] .card-nubank .card-invoice-label{color:#7e4a99}
+html[data-theme="light"] .card-nubank .card-invoice-status:not(.is-paid){
+ background:#eee0f6;color:#7d399f;
+}
+html[data-theme="light"] .card-nubank .card-purchase-head h3{color:#352b42}
+html[data-theme="light"] .card-nubank .card-show-more{
+ background:#f5ebfb;border-color:#dfc7ed;color:#79389d;
+}
+html[data-theme="light"] .nubank-import-total{
+ background:linear-gradient(125deg,#f6e9fc,#fff);border-color:#dec2e9;
+}
+html[data-theme="light"] .nubank-import-total>span{color:#78588b}
+html[data-theme="light"] .nubank-import-stats>div{background:#f6f0fa;border-color:#e7d9ee}
+html[data-theme="light"] .nubank-import-stats span{color:#685775}
+html[data-theme="light"] .card-kind-payment,
+html[data-theme="light"] .card-kind-refund{background:#e1f3e9;color:#218052}
+html[data-theme="light"] .card-kind-market{background:#fff0dd;color:#a56222}
+html[data-theme="light"] .card-kind-shopping{background:#f0e9fb;color:#7856ae}
+html[data-theme="light"] .card-kind-digital{background:#e8edff;color:#506cc4}
+html[data-theme="light"] .card-kind-health{background:#fceaf3;color:#b34e82}
+html[data-theme="light"] .card-kind-other{background:#edf1f6;color:#657489}
+html[data-theme="light"] .modalback{background:#17203391}
+html[data-theme="light"] .modal,
+html[data-theme="light"] .nubank-import-modal{
+ background:#fff;border-color:#dfe5ed;box-shadow:0 24px 75px #23334a30;
+}
+html[data-theme="light"] .modal h2,
+html[data-theme="light"] .nubank-import-header h2{color:#253143}
+html[data-theme="light"] .field{color:#4b5b70}
+html[data-theme="light"] .field input,
+html[data-theme="light"] .field select,
+html[data-theme="light"] .invite-form-row input{
+ background:#fff;color:#253143;border-color:#cbd6e2;
+}
+html[data-theme="light"] .field input::placeholder,
+html[data-theme="light"] .card-search-wrap input::placeholder,
+html[data-theme="light"] .invite-form-row input::placeholder{color:#8a96a6}
+html[data-theme="light"] .nubank-import-header,
+html[data-theme="light"] .nubank-import-list,
+html[data-theme="light"] .nubank-import-row,
+html[data-theme="light"] .nubank-import-footer{border-color:#e2e7ee}
+html[data-theme="light"] .nubank-import-close{
+ background:#f0f3f7;color:#506075;
+}
+html[data-theme="light"] .nubank-import-header h2 span,
+html[data-theme="light"] .nubank-import-row-meta,
+html[data-theme="light"] .nubank-import-section-title p,
+html[data-theme="light"] .nubank-import-due{color:#6d7a8d}
+html[data-theme="light"] .nubank-import-note{
+ background:#f3f5f8;color:#5d6c7f;
+}
+html[data-theme="light"] .nubank-import-footer{background:#fff}
+html[data-theme="light"] .account-overlay{background:#172033a8}
+html[data-theme="light"] .account-dialog{
+ background:#fff;border-color:#dce3ec;box-shadow:0 25px 80px #20304a33;
+}
+html[data-theme="light"] .account-dialog-header h2{color:#253143}
+html[data-theme="light"] .account-dialog-header p,
+html[data-theme="light"] .cloud-card p,
+html[data-theme="light"] .cloud-sync-details{color:#627186}
+html[data-theme="light"] .account-dialog .cloud-card,
+html[data-theme="light"] .cloud-card{
+ background:#f8fafc;border-color:#dfe5ed;color:#253143;
+}
+html[data-theme="light"] .cloud-conflict{border-color:#dbe2eb}
+html[data-theme="light"] .invite-admin{border-color:#dfe5ed}
+html[data-theme="light"] .invite-admin>strong,
+html[data-theme="light"] .invite-form>label{color:#2c384a}
+html[data-theme="light"] .invite-row{background:#fff;border-color:#dfe5ed}
+html[data-theme="light"] .invite-state{color:#637184}
+html[data-theme="light"] .nexo-sync-indicator{
+ background:#f2f5f8;border-color:#d7dfe9;color:#4b5a6e;
+}
+html[data-theme="light"] .nexo-sync-indicator[data-sync-phase="synced"]{
+ background:#e6f5ec;border-color:#b6dfc6;color:#207348;
+}
+html[data-theme="light"] .nexo-sync-indicator[data-sync-phase="conflict"],
+html[data-theme="light"] .nexo-sync-indicator[data-sync-phase="paused"]{
+ background:#fff0f0;border-color:#f0b8bc;color:#b52737;
+}
+html[data-theme="light"] .nexo-toast{
+ background:#e5f5eb;color:#246a44;border-color:#b8dfc6;
+ box-shadow:0 10px 36px #253b5029;
+}
+html[data-theme="light"] .nexo-skeleton{
+ background:linear-gradient(95deg,#e6ebf1 10%,#f5f7fa 45%,#e6ebf1 80%);
+ background-size:220% 100%;
+}
+html[data-theme="light"] .welcome-screen{background:#f6f7fa;color:#253143}
+html[data-theme="light"] .welcome-glow{
+ background:radial-gradient(ellipse 48% 32% at 50% 32%,#f5ad6b21,transparent 78%),
+ linear-gradient(180deg,#fff 0%,#f5f6f9 100%);
+}
+html[data-theme="light"] .welcome-brand p,
+html[data-theme="light"] .welcome-description,
+html[data-theme="light"] .welcome-status{color:#697589}
+html[data-theme="light"] .welcome-eyebrow,
+html[data-theme="light"] .welcome-main h1 em{color:#b96023}
+html[data-theme="light"] .welcome-local{color:#526075}
+html[data-theme="light"] .nexo-nav-editor-row{
+ background:#f6f8fb;border-color:#dfe5ed;
+}
+@media(max-width:900px){
+ html[data-theme="light"] .nav{
+  background:rgba(255,255,255,.97);border-color:#e0e5ec;
+  box-shadow:0 -12px 35px #1c34451b;
+ }
+ html[data-theme="light"] .nav button.active{box-shadow:inset 0 2px 0 #e77f30}
+ html[data-theme="light"] .nav button.nexo-nav-item.nexo-nav-dragging{
+  box-shadow:0 8px 20px #7b5c3330,inset 0 3px 0 #e77f30;
+ }
+}
