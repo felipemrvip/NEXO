@@ -693,3 +693,5 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
  .btn,.actions button,.nav button,.filters button,.card-show-more,.nexo-toast{transition:none!important}
  .btn:active,.actions button:active,.nav button:active{transform:none!important}
 }
+
+.nexo-loading-text{display:inline-flex;align-items:center;justify-content:center;gap:9px}.nexo-loading-spinner{display:inline-block;width:15px;height:15px;border:2px solid #ffffff45;border-top-color:#ff9b52;border-radius:50%;animation:nexo-spin .75s linear infinite}@media(prefers-reduced-motion:reduce){.nexo-loading-spinner{animation:none;border-top-color:#ff9b52}}
