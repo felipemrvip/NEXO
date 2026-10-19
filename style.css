@@ -712,3 +712,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nexo-view-enter>.grid2,.nexo-view-enter>.dashboard,.nexo-view-enter>.cards-overview,.nexo-view-enter>.section{animation-delay:55ms}
 @media(max-width:900px){.shell>.top>.topactions .nexo-sync-indicator{grid-column:1/-1;min-height:37px;justify-self:stretch}}
 @media(prefers-reduced-motion:reduce){.nexo-view-enter>*,.nexo-sync-dot{animation:none!important}}
+
+
+/* v40: revelacao sequencial dos paineis e graficos, referencia dashboard premium */
+@keyframes nexo-panel-reveal{from{opacity:0;transform:translate3d(0,15px,0) scale(.99)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+.nexo-motion>.head{animation:nexo-panel-reveal .42s cubic-bezier(.22,1,.36,1) both}
+.nexo-motion>.hero,.nexo-motion>.cards-overview{animation:nexo-panel-reveal .58s cubic-bezier(.22,1,.36,1) .08s both}
+.nexo-motion>.dashboard>.grid2,.nexo-motion>.grid2{animation:nexo-panel-reveal .58s cubic-bezier(.22,1,.36,1) .13s both}
+.nexo-motion>.dashboard>.analytics-grid,.nexo-motion>.panel,.nexo-motion>.card-invoice{animation:nexo-panel-reveal .62s cubic-bezier(.22,1,.36,1) .22s both}
+.nexo-motion>.dashboard>.wide:last-of-type,.nexo-motion>.listcard{animation:nexo-panel-reveal .58s cubic-bezier(.22,1,.36,1) .3s both}
+.nexo-motion .hero .amount,.nexo-motion .stat,.nexo-motion .cards-overview-value{font-variant-numeric:tabular-nums}
+.nexo-motion .donut circle[stroke-dasharray]{transform-box:fill-box;transform-origin:center;animation:nexo-donut-reveal .95s cubic-bezier(.22,1,.36,1) both}
+@keyframes nexo-donut-reveal{from{opacity:0;stroke-dasharray:0 999}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.nexo-motion>*,.nexo-motion .donut circle[stroke-dasharray]{animation:none!important}.nexo-motion svg.chart path{transition:none!important}}
