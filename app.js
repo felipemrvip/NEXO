@@ -42,6 +42,9 @@ function donut(){const {income,expense}=totals(),total=income+expense,p=total?in
 function home(){
  const {income,expense}=totals(),pending=data.cards.filter(c=>!c.paid).reduce((s,c)=>s+c.amount,0);
  const activeJobs=data.jobs.filter(j=>jobDue(j)>0);
+ const jobsReceivable=Math.round(activeJobs.reduce((sum,j)=>sum+jobDue(j),0)*100)/100;
+ const currentBalance=Math.round((Number(data.openingBalance||0)+income-expense)*100)/100;
+ const availableAfterCards=Math.round((currentBalance-pending)*100)/100;
  const dateLabel=new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
  return `<div class="head">
   <div class="head-kicker"><span class="kicker-dot"></span>PAINEL DE CONTROLE<span class="head-date">${esc(dateLabel.toUpperCase())}</span></div>
@@ -50,17 +53,19 @@ function home(){
  </div>
  ${filters()}
  <section class="hero" aria-label="Resumo financeiro">
-  <div class="hero-top row"><div class="hero-label"><span class="hero-pulse"></span>SALDO ATUAL</div><button class="balance-edit" data-edit-balance aria-label="Editar saldo inicial">✎ Editar saldo</button></div>
-  <div class="amount">${money(data.openingBalance+income-expense)}</div>
+  <div class="hero-top row"><div class="hero-label"><span class="hero-pulse"></span>SALDO APÓS FATURAS</div><button class="balance-edit" data-edit-balance aria-label="Editar saldo inicial">✎ Editar saldo</button></div>
+  <div class="amount">${money(availableAfterCards)}</div>
   <div class="herofoot">
    <div>↗ Receitas registradas<b>${money(income)}</b></div>
    <div>↘ Despesas registradas<b>${money(expense)}</b></div>
+   <div class="hero-card-debt">↘ Faturas pendentes<b>${money(pending)}</b></div>
+   <div class="hero-current-balance">Saldo antes das faturas<b>${money(currentBalance)}</b></div>
   </div>
   <div class="hero-toolbar"><button class="btn" data-add="transactions">＋ Nova movimentação</button><button class="btn ghost" data-page="transactions">Ver finanças ↗</button></div>
  </section>
  <div class="dashboard">
   <div class="grid2 wide summary-grid">
-   <div class="panel"><span class="iconbox">${uiIcon("jobs")}</span><div class="stat">${activeJobs.length}</div><div class="label">Trabalhos a receber</div></div>
+   <div class="panel"><span class="iconbox">${uiIcon("jobs")}</span><div class="stat">${money(jobsReceivable)}</div><div class="label">Trabalhos a receber · ${activeJobs.length} pendente(s)</div></div>
    <div class="panel"><span class="iconbox">${uiIcon("cards")}</span><div class="stat" style="font-size:22px">${money(pending)}</div><div class="label">Faturas a pagar</div></div>
   </div>
   <div class="wide analytics-grid">${flow()}${donut()}</div>
@@ -69,7 +74,7 @@ function home(){
    ${activeJobs.slice(0,3).map(j=>`<div class="listcard"><div class="row"><div><strong>${esc(j.name)}</strong><p class="muted small">${esc(clientName(j.clientId))}</p></div><b class="orange">${money(jobDue(j))} pendentes</b></div></div>`).join('')||'<p class="empty">Não há trabalhos com pagamento pendente. Adicione seu primeiro trabalho.</p>'}
   </section>
  </div>
- <div class="notice">Seu saldo é calculado a partir do saldo inicial informado e das movimentações cadastradas. O gráfico considera somente lançamentos com data.</div>`
+ <div class="notice">O saldo após faturas considera o saldo inicial, as movimentações registradas e desconta as faturas de cartões ainda não pagas. Valores de trabalhos a receber não entram no saldo até o pagamento ser registrado. Não registre a mesma compra do cartão também como despesa manual, para evitar duplicidade. O gráfico considera somente lançamentos com data.</div>`
 }
 function transactions(){const {income,expense}=totals();return `<div class="head"><div class="eyebrow orange">FINANCEIRO</div><h1>Seu dinheiro.</h1><div class="muted">Controle suas movimentações.</div></div>${filters()}<div class="grid2 finance-summary-grid"><div class="panel finance-income-panel"><div class="label">Receitas</div><div class="stat" style="font-size:21px">${money(income)}</div></div><div class="panel finance-expense-panel"><div class="label">Despesas</div><div class="stat" style="font-size:21px">${money(expense)}</div></div></div>${donut()}<div class="section"><h2>Movimentações</h2><button class="btn" data-add="transactions">+ Nova</button></div>${visible().map(t=>`<div class="listcard row"><div><strong>${esc(t.name)}</strong><p class="muted small">${t.scope==='pessoal'?'Pessoal':'Profissional'}${t.date?' · '+esc(t.date.split('-').reverse().join('/')):' · Sem data'}</p></div><div style="text-align:right"><b class="${t.kind==='in'?'money-in':'money-out'}">${t.kind==='in'?'+':'−'}${money(t.amount)}</b><div class="actions" style="margin-top:8px"><button data-edit="transactions:${t.id}">Editar</button><button class="delete" data-delete="transactions:${t.id}">Excluir</button></div></div></div>`).join('')||'<p class="empty">Nenhuma movimentação.</p>'}<div class="section"><h2>Cartões de crédito</h2><button class="btn tiny ghost" data-page="cards">Ver cartões →</button></div><div class="panel row"><div><div class="label">Faturas pendentes</div><div class="stat" style="font-size:22px">${money(data.cards.filter(c=>!c.paid).reduce((s,c)=>s+c.amount,0))}</div></div><span class="iconbox">${uiIcon("cards")}</span></div>`}
 const jobPaid=j=>Math.max(0,Math.min(Number(j.amount)||0,Number(j.paidAmount)||0));
