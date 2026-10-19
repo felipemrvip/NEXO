@@ -346,7 +346,7 @@ showWelcome(true);
 window.addEventListener('nexo:auth',event=>{
  const detail=event.detail||{};
  if(detail.error){showWelcome(true);welcomeStatus.textContent=detail.error;document.getElementById('nexo-google-login').disabled=false;return}
- if(detail.loading){welcomeStatus.textContent='Verificando sua conta Google…';document.getElementById('nexo-google-login').disabled=true;return}
+ if(detail.loading){welcomeStatus.innerHTML='<span class="nexo-loading-text"><span class="nexo-loading-spinner" aria-hidden="true"></span>Verificando sua conta Google…</span>';document.getElementById('nexo-google-login').disabled=true;return}
  welcomeStatus.textContent='Entre com sua conta Google para continuar.';
  document.getElementById('nexo-google-login').disabled=false;
  showWelcome(!detail.signedIn);
