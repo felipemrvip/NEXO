@@ -259,7 +259,7 @@ function cards(){
 }
 function field(label,name,value='',type='text',extra=''){return `<label class="field">${label}<input name="${name}" type="${type}" value="${esc(value)}" ${extra}></label>`}
 function selectField(label,name,options,current){return `<label class="field">${label}<select name="${name}">${options.map(([v,l])=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(l)}</option>`).join('')}</select></label>`}
-function renderModal(){if(!modal)return '';if(modal.mode==='nubank-import')return nubankModal();if(modal.mode==='nav-order')return '<div class="modalback"><div class="modal"><h2>Organizar menu</h2><p class="muted">Use ↑ e ↓ para alterar a ordem. Salvo neste aparelho.</p><div class="nexo-nav-editor">'+nexoNavOrder.map((id,i)=>'<div class="nexo-nav-editor-row"><span>'+uiIcon(id)+' '+nexoNavLabels[id]+'</span><div class="actions"><button data-nav-move="'+id+'" data-nav-direction="-1" '+(i===0?'disabled':'')+'>↑</button><button data-nav-move="'+id+'" data-nav-direction="1" '+(i===nexoNavOrder.length-1?'disabled':'')+'>↓</button></div></div>').join('')+'</div><div class="modalfooter"><button class="btn" data-close>Concluir</button></div></div></div>';if(modal.mode==='balance'){return `<div class="modalback"><form class="modal" id="balance-form"><h2>Editar saldo inicial</h2><p class="muted small">Informe o valor que você já tinha antes das movimentações cadastradas no NEXO. As receitas e despesas serão somadas automaticamente.</p><label class="field">Saldo inicial (R$)<input name="openingBalance" type="number" inputmode="decimal" step="0.01" required value="${data.openingBalance}"></label><div class="modalfooter"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Salvar saldo</button></div></form></div>`}if(modal.mode==='reset'){return `<div class="modalback"><div class="modal"><h2>Começar do zero?</h2><p class="muted">Isso apagará todos os clientes, trabalhos, receitas, despesas e cartões deste dispositivo. Se a sincronização estiver ativa, a exclusão também será enviada à nuvem e aos outros aparelhos. O NEXO continuará instalado.</p><p class="muted small">Antes de continuar, recomendamos usar o botão Backup para guardar uma cópia.</p><label class="field">Para confirmar, digite APAGAR<input id="reset-confirmation" type="text" placeholder="APAGAR" autocomplete="off" autocapitalize="characters"></label><div class="modalfooter"><button class="btn ghost" data-close>Cancelar</button><button class="btn danger" data-confirm-reset>Apagar tudo</button></div></div></div>`}if(modal.mode==='job-payment'){const j=data.jobs.find(x=>x.id===modal.id);if(!j)return '';return `<div class="modalback"><form class="modal" id="job-payment-form"><h2>Registrar pagamento</h2><p class="muted small">${esc(j.name)} — Falta receber ${money(jobDue(j))}. Registre um sinal ou parcela recebida.</p><label class="field">Valor recebido agora (R$)<input name="payment" type="number" inputmode="decimal" min="0.01" max="${jobDue(j)}" step="0.01" required></label><p class="muted small">O pagamento será registrado automaticamente como receita profissional no saldo e nas movimentações. Não cadastre a mesma receita novamente.</p><div class="modalfooter"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Confirmar recebimento</button></div></form></div>`} if(modal.mode==='delete'){return `<div class="modalback"><div class="modal"><h2>Excluir registro?</h2><p class="muted">Deseja excluir <b>${esc(modal.item.name)}</b>? A exclusão será sincronizada se a sincronização estiver ativa. Guarde um backup antes de confirmar.</p><div class="modalfooter"><button class="btn ghost" data-close>Cancelar</button><button class="btn danger" data-confirm-delete>Excluir</button></div></div></div>`}const x=modal.item||{},type=modal.type;let fields=field('Nome / descrição','name',x.name,'text','required maxlength="120"');if(type==='transactions')fields+=field('Valor (R$)','amount',x.amount??'','number','required min="0.01" step="0.01"')+field('Data da movimentação','date',x.date??(modal.item?'':today()),'date','required')+selectField('Tipo','kind',[['out','Despesa'],['in','Receita']],x.kind||'out')+selectField('Área','scope',[['pessoal','Pessoal'],['profissional','Profissional']],x.scope||'pessoal')+selectField('Pagamento','paid',[['true','Pago / recebido'],['false','Pendente (não descontar do saldo)']],String(x.paid!==false));if(type==='clients')fields+=field('Contato','contact',x.contact||'');if(type==='jobs')fields+=selectField('Cliente','clientId',data.clients.map(c=>[c.id,c.name]),x.clientId||data.clients[0]?.id)+field('Valor contratado (R$)','amount',x.amount??'','number','required min="0" step="0.01"')+field('Valor já recebido / sinal (R$)','paidAmount',x.paidAmount??0,'number','required min="0" step="0.01"');if(type==='cards')fields+=field('Valor da fatura (R$)','amount',x.amount??'','number','required min="0" step="0.01"')+field('Vencimento','due',x.due||today(),'date','required')+selectField('Área do pagamento','scope',[['pessoal','Pessoal'],['profissional','Profissional']],nexoCardScope(x))+selectField('Situação','paid',[['false','Pendente'],['true','Paga']],String(x.paid??false));return `<div class="modalback"><form class="modal" id="edit-form"><h2>${modal.item?'Editar':'Adicionar'} ${({'transactions':'movimentação','jobs':'trabalho','clients':'cliente','cards':'cartão'})[type]}</h2>${fields}<div class="modalfooter"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Salvar</button></div></form></div>`}
+function renderModal(){if(!modal)return '';if(modal.mode==='nubank-import')return nubankModal();if(modal.mode==='balance'){return `<div class="modalback"><form class="modal" id="balance-form"><h2>Editar saldo inicial</h2><p class="muted small">Informe o valor que você já tinha antes das movimentações cadastradas no NEXO. As receitas e despesas serão somadas automaticamente.</p><label class="field">Saldo inicial (R$)<input name="openingBalance" type="number" inputmode="decimal" step="0.01" required value="${data.openingBalance}"></label><div class="modalfooter"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Salvar saldo</button></div></form></div>`}if(modal.mode==='reset'){return `<div class="modalback"><div class="modal"><h2>Começar do zero?</h2><p class="muted">Isso apagará todos os clientes, trabalhos, receitas, despesas e cartões deste dispositivo. Se a sincronização estiver ativa, a exclusão também será enviada à nuvem e aos outros aparelhos. O NEXO continuará instalado.</p><p class="muted small">Antes de continuar, recomendamos usar o botão Backup para guardar uma cópia.</p><label class="field">Para confirmar, digite APAGAR<input id="reset-confirmation" type="text" placeholder="APAGAR" autocomplete="off" autocapitalize="characters"></label><div class="modalfooter"><button class="btn ghost" data-close>Cancelar</button><button class="btn danger" data-confirm-reset>Apagar tudo</button></div></div></div>`}if(modal.mode==='job-payment'){const j=data.jobs.find(x=>x.id===modal.id);if(!j)return '';return `<div class="modalback"><form class="modal" id="job-payment-form"><h2>Registrar pagamento</h2><p class="muted small">${esc(j.name)} — Falta receber ${money(jobDue(j))}. Registre um sinal ou parcela recebida.</p><label class="field">Valor recebido agora (R$)<input name="payment" type="number" inputmode="decimal" min="0.01" max="${jobDue(j)}" step="0.01" required></label><p class="muted small">O pagamento será registrado automaticamente como receita profissional no saldo e nas movimentações. Não cadastre a mesma receita novamente.</p><div class="modalfooter"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Confirmar recebimento</button></div></form></div>`} if(modal.mode==='delete'){return `<div class="modalback"><div class="modal"><h2>Excluir registro?</h2><p class="muted">Deseja excluir <b>${esc(modal.item.name)}</b>? A exclusão será sincronizada se a sincronização estiver ativa. Guarde um backup antes de confirmar.</p><div class="modalfooter"><button class="btn ghost" data-close>Cancelar</button><button class="btn danger" data-confirm-delete>Excluir</button></div></div></div>`}const x=modal.item||{},type=modal.type;let fields=field('Nome / descrição','name',x.name,'text','required maxlength="120"');if(type==='transactions')fields+=field('Valor (R$)','amount',x.amount??'','number','required min="0.01" step="0.01"')+field('Data da movimentação','date',x.date??(modal.item?'':today()),'date','required')+selectField('Tipo','kind',[['out','Despesa'],['in','Receita']],x.kind||'out')+selectField('Área','scope',[['pessoal','Pessoal'],['profissional','Profissional']],x.scope||'pessoal')+selectField('Pagamento','paid',[['true','Pago / recebido'],['false','Pendente (não descontar do saldo)']],String(x.paid!==false));if(type==='clients')fields+=field('Contato','contact',x.contact||'');if(type==='jobs')fields+=selectField('Cliente','clientId',data.clients.map(c=>[c.id,c.name]),x.clientId||data.clients[0]?.id)+field('Valor contratado (R$)','amount',x.amount??'','number','required min="0" step="0.01"')+field('Valor já recebido / sinal (R$)','paidAmount',x.paidAmount??0,'number','required min="0" step="0.01"');if(type==='cards')fields+=field('Valor da fatura (R$)','amount',x.amount??'','number','required min="0" step="0.01"')+field('Vencimento','due',x.due||today(),'date','required')+selectField('Área do pagamento','scope',[['pessoal','Pessoal'],['profissional','Profissional']],nexoCardScope(x))+selectField('Situação','paid',[['false','Pendente'],['true','Paga']],String(x.paid??false));return `<div class="modalback"><form class="modal" id="edit-form"><h2>${modal.item?'Editar':'Adicionar'} ${({'transactions':'movimentação','jobs':'trabalho','clients':'cliente','cards':'cartão'})[type]}</h2>${fields}<div class="modalfooter"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Salvar</button></div></form></div>`}
 let nexoLastPage=null;
 let nexoToastTimer=null;
 let nexoSyncState={phase:'local',message:'Aguardando verificação da conta'};
@@ -373,7 +373,7 @@ function nexoAnimateView(){
  nexoAnimateNumbers(shell);
  nexoAnimateCharts(shell);
 }
-function render(){const pages={home,transactions,jobs,clients,cards};app.innerHTML=`<main class="shell"><header class="top"><div class="brand"><img class="logo brand-app-icon" src="./icons/logo-nexo.webp?v=22" width="44" height="44" alt="" aria-hidden="true"><div><strong>nexo</strong><div class="eyebrow">FINANÇAS &amp; PROJETOS</div></div></div><div class="topactions"><button type="button" class="nexo-sync-indicator" id="nexo-sync-indicator" data-account-open data-sync-phase="local" title="Ver estado da sincronização" aria-label="Abrir conta e sincronização"><span class="nexo-sync-dot" aria-hidden="true"></span><span class="nexo-sync-label">Somente neste aparelho</span></button><button class="btn tiny ghost accountbtn" data-account-open title="Gerenciar conta Google e sincronização" aria-label="Conta e sincronização">${uiIcon('settings')} Conta</button><button class="btn tiny ghost" data-export title="Salvar cópia de segurança">${uiIcon('backup')} Backup</button><button class="btn tiny ghost" data-import title="Importar arquivo de backup do NEXO">${uiIcon('backup')} Importar backup</button><input id="nexo-import-file" type="file" accept=".json,application/json" hidden aria-label="Selecionar backup JSON do NEXO"><button class="btn tiny ghost settingsbtn" data-reset-open title="Configurações: começar do zero" aria-label="Configurações e limpeza de dados">${uiIcon('settings')}</button></div></header>${pages[page]()}<nav class="nav" aria-label="Navegação principal">${nexoNavOrder.map(id=>'<button data-page="'+id+'" class="'+(page===id?'active':'')+'"><span>'+uiIcon(id)+'</span>'+nexoNavLabels[id]+'</button>').join('')}<button type="button" class="nexo-nav-settings" data-nav-order-open title="Organizar menu"><span>${uiIcon('settings')}</span><span class="nexo-nav-settings-label">Organizar menu</span></button></nav></main>${renderModal()}`;nexoAnimateView();window.dispatchEvent(new CustomEvent('nexo:sync-status',{detail:nexoSyncState}))}
+function render(){const pages={home,transactions,jobs,clients,cards};app.innerHTML=`<main class="shell"><header class="top"><div class="brand"><img class="logo brand-app-icon" src="./icons/logo-nexo.webp?v=22" width="44" height="44" alt="" aria-hidden="true"><div><strong>nexo</strong><div class="eyebrow">FINANÇAS &amp; PROJETOS</div></div></div><div class="topactions"><button type="button" class="nexo-sync-indicator" id="nexo-sync-indicator" data-account-open data-sync-phase="local" title="Ver estado da sincronização" aria-label="Abrir conta e sincronização"><span class="nexo-sync-dot" aria-hidden="true"></span><span class="nexo-sync-label">Somente neste aparelho</span></button><button class="btn tiny ghost accountbtn" data-account-open title="Gerenciar conta Google e sincronização" aria-label="Conta e sincronização">${uiIcon('settings')} Conta</button><button class="btn tiny ghost" data-export title="Salvar cópia de segurança">${uiIcon('backup')} Backup</button><button class="btn tiny ghost" data-import title="Importar arquivo de backup do NEXO">${uiIcon('backup')} Importar backup</button><input id="nexo-import-file" type="file" accept=".json,application/json" hidden aria-label="Selecionar backup JSON do NEXO"><button class="btn tiny ghost settingsbtn" data-reset-open title="Configurações: começar do zero" aria-label="Configurações e limpeza de dados">${uiIcon('settings')}</button></div></header>${pages[page]()}<nav class="nav" aria-label="Navegação principal" aria-description="Segure e arraste uma aba para alterar sua posição">${nexoNavOrder.map(id=>'<button type="button" data-page="'+id+'" draggable="false" class="nexo-nav-item '+(page===id?'active':'')+'" title="Segure e arraste para reorganizar · Alt + setas para mover" aria-label="'+nexoNavLabels[id]+' — segure e arraste para reorganizar"><span>'+uiIcon(id)+'</span>'+nexoNavLabels[id]+'</button>').join('')}</nav></main>${renderModal()}`;nexoAnimateView();window.dispatchEvent(new CustomEvent('nexo:sync-status',{detail:nexoSyncState}))}
 // Importação local: valida antes de substituir; não altera dados até a confirmação.
 function validateBackup(value){
  if(!value||typeof value!=='object'||Array.isArray(value))throw Error('O arquivo não contém um backup válido do NEXO.');
@@ -439,7 +439,104 @@ function closeNexoAccount(){document.getElementById('nexo-account-view').hidden=
 document.getElementById('nexo-account-close').addEventListener('click',closeNexoAccount);
 document.getElementById('nexo-account-view').addEventListener('click',e=>{if(e.target.id==='nexo-account-view')closeNexoAccount()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('nexo-account-view').hidden)closeNexoAccount()});
-app.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(!activeKey)return;if((storageProblem||tabLocked)&&!['page','scope','period','export','import','close'].some(k=>k in b.dataset)){alert('Edição pausada para preservar seus dados. Use a primeira aba do NEXO ou restaure um backup.');return}if(b.dataset.navOrderOpen!==undefined){modal={mode:'nav-order'};render();return}if(b.dataset.navMove){moveNexoNav(b.dataset.navMove,Number(b.dataset.navDirection));render();return}if(b.dataset.toggleExpense){const t=data.transactions.find(x=>x.id===b.dataset.toggleExpense);if(!t||t.kind!=='out'||t.cardAuto)return;t.paid=t.paid===false;save();render();return}if(b.dataset.cardExpand!==undefined){const id=b.dataset.cardExpand;cardListExpanded[id]=!cardListExpanded[id];render();return}if(b.dataset.nubankSelect!==undefined){document.getElementById('nexo-nubank-file')?.click();return}if(b.dataset.nubankConfirm!==undefined){nubankConfirm();return}if(b.dataset.accountOpen!==undefined){const view=document.getElementById('nexo-account-view');view.hidden=false;document.body.classList.add('account-open');document.getElementById('nexo-account-close')?.focus();return}if(b.dataset.import!==undefined){document.getElementById('nexo-import-file')?.click();return}if(b.dataset.page){page=b.dataset.page;modal=null;render();window.scrollTo(0,0)}else if(b.dataset.scope){scope=b.dataset.scope;render()}else if(b.dataset.period){period=b.dataset.period;render()}else if(b.dataset.add){if(b.dataset.add==='jobs'&&!data.clients.length){alert('Cadastre um cliente antes de criar um trabalho.');page='clients';render();return}modal={type:b.dataset.add,item:null};render()}else if(b.dataset.edit){const [type,id]=b.dataset.edit.split(':');modal={type,item:data[type].find(x=>x.id===id)};render()}else if(b.dataset.delete){const [type,id]=b.dataset.delete.split(':');if(type==='clients'&&data.jobs.some(j=>j.clientId===id)){alert('Este cliente tem trabalhos vinculados. Exclua ou transfira esses trabalhos primeiro.');return}modal={mode:'delete',type,item:data[type].find(x=>x.id===id)};render()}else if(b.dataset.editBalance!==undefined){modal={mode:'balance'};render()}else if(b.dataset.resetOpen!==undefined){modal={mode:'reset'};render()}else if(b.dataset.confirmReset!==undefined){const input=document.getElementById('reset-confirmation');if(!input||input.value.trim().toUpperCase()!=='APAGAR'){alert('Digite APAGAR para confirmar a exclusão.');return}data={transactions:[],clients:[],jobs:[],cards:[],openingBalance:0};page='home';scope='geral';modal=null;save();render();window.scrollTo(0,0)}else if(b.dataset.confirmDelete!==undefined){const type=modal.type,item=modal.item;if(type==='transactions'){
+
+/* v51: reordenação direta do menu com mouse ou toque longo.
+   Não altera o modelo financeiro nem dispara sincronização. */
+let nexoNavDrag=null;
+let nexoNavSuppressClick=false;
+function nexoNavItems(nav){return [...nav.querySelectorAll('button.nexo-nav-item[data-page]')]}
+function nexoNavPersist(nav){
+ const ids=nexoNavItems(nav).map(b=>b.dataset.page);
+ if(ids.length!==nexoNavDefault.length||new Set(ids).size!==ids.length||
+    !ids.every(id=>nexoNavDefault.includes(id)))return false;
+ nexoNavOrder=ids;
+ try{localStorage.setItem('nexo-menu-order-v1',JSON.stringify(ids))}catch(e){console.warn('Não foi possível salvar a ordem do menu.',e)}
+ return true;
+}
+function nexoNavFinishDrag(e,cancel=false){
+ const state=nexoNavDrag;
+ if(!state||e.pointerId!==state.pointerId)return;
+ clearTimeout(state.timer);
+ nexoNavDrag=null;
+ if(state.active){
+  state.nav.classList.remove('nexo-nav-reordering');
+  state.button.classList.remove('nexo-nav-dragging');
+  if(cancel){
+   for(const id of state.original){
+    const el=nexoNavItems(state.nav).find(b=>b.dataset.page===id);
+    if(el)state.nav.appendChild(el);
+   }
+  }else nexoNavPersist(state.nav);
+  nexoNavSuppressClick=true;
+  // Descarta o click sintetizado pelo toque/mouse depois do drag.
+  setTimeout(()=>{nexoNavSuppressClick=false},450);
+ }
+}
+app.addEventListener('pointerdown',e=>{
+ const button=e.target.closest('.nav button.nexo-nav-item[data-page]');
+ if(!button||e.button!==0||!activeKey)return;
+ const nav=button.closest('.nav');
+ const state={
+  nav,button,pointerId:e.pointerId,x:e.clientX,y:e.clientY,
+  touch:e.pointerType!=='mouse',active:false,timer:null,
+  original:nexoNavItems(nav).map(b=>b.dataset.page)
+ };
+ nexoNavDrag=state;
+ const activate=()=>{
+  if(nexoNavDrag!==state)return;
+  state.active=true;
+  nav.classList.add('nexo-nav-reordering');
+  button.classList.add('nexo-nav-dragging');
+ };
+ if(state.touch)state.timer=setTimeout(activate,350);
+},true);
+app.addEventListener('pointermove',e=>{
+ const state=nexoNavDrag;
+ if(!state||e.pointerId!==state.pointerId)return;
+ const distance=Math.hypot(e.clientX-state.x,e.clientY-state.y);
+ if(!state.active){
+  if(state.touch){
+   if(distance>10){clearTimeout(state.timer);nexoNavDrag=null}
+   return;
+  }
+  if(distance<7)return;
+  state.active=true;
+  state.nav.classList.add('nexo-nav-reordering');
+  state.button.classList.add('nexo-nav-dragging');
+ }
+ e.preventDefault();
+ const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.nav button.nexo-nav-item[data-page]');
+ if(!target||target===state.button||target.closest('.nav')!==state.nav)return;
+ const items=nexoNavItems(state.nav);
+ const from=items.indexOf(state.button),to=items.indexOf(target);
+ if(from<0||to<0)return;
+ state.nav.insertBefore(state.button,from<to?target.nextSibling:target);
+}, {passive:false});
+app.addEventListener('pointerup',e=>nexoNavFinishDrag(e));
+app.addEventListener('pointercancel',e=>nexoNavFinishDrag(e,true));
+app.addEventListener('click',e=>{
+ if(!nexoNavSuppressClick)return;
+ if(!e.target.closest('.nav'))return;
+ e.preventDefault();
+ e.stopImmediatePropagation();
+ nexoNavSuppressClick=false;
+},true);
+app.addEventListener('keydown',e=>{
+ if(!e.altKey||!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;
+ const button=e.target.closest('.nav button.nexo-nav-item[data-page]');
+ if(!button)return;
+ const nav=button.closest('.nav'),items=nexoNavItems(nav);
+ const index=items.indexOf(button);
+ const direction=['ArrowUp','ArrowLeft'].includes(e.key)?-1:1;
+ const next=index+direction;
+ if(next<0||next>=items.length)return;
+ e.preventDefault();
+ nav.insertBefore(button,direction>0?items[next].nextSibling:items[next]);
+ nexoNavPersist(nav);
+ button.focus();
+});
+
+app.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(!activeKey)return;if((storageProblem||tabLocked)&&!['page','scope','period','export','import','close'].some(k=>k in b.dataset)){alert('Edição pausada para preservar seus dados. Use a primeira aba do NEXO ou restaure um backup.');return}if(b.dataset.toggleExpense){const t=data.transactions.find(x=>x.id===b.dataset.toggleExpense);if(!t||t.kind!=='out'||t.cardAuto)return;t.paid=t.paid===false;save();render();return}if(b.dataset.cardExpand!==undefined){const id=b.dataset.cardExpand;cardListExpanded[id]=!cardListExpanded[id];render();return}if(b.dataset.nubankSelect!==undefined){document.getElementById('nexo-nubank-file')?.click();return}if(b.dataset.nubankConfirm!==undefined){nubankConfirm();return}if(b.dataset.accountOpen!==undefined){const view=document.getElementById('nexo-account-view');view.hidden=false;document.body.classList.add('account-open');document.getElementById('nexo-account-close')?.focus();return}if(b.dataset.import!==undefined){document.getElementById('nexo-import-file')?.click();return}if(b.dataset.page){page=b.dataset.page;modal=null;render();window.scrollTo(0,0)}else if(b.dataset.scope){scope=b.dataset.scope;render()}else if(b.dataset.period){period=b.dataset.period;render()}else if(b.dataset.add){if(b.dataset.add==='jobs'&&!data.clients.length){alert('Cadastre um cliente antes de criar um trabalho.');page='clients';render();return}modal={type:b.dataset.add,item:null};render()}else if(b.dataset.edit){const [type,id]=b.dataset.edit.split(':');modal={type,item:data[type].find(x=>x.id===id)};render()}else if(b.dataset.delete){const [type,id]=b.dataset.delete.split(':');if(type==='clients'&&data.jobs.some(j=>j.clientId===id)){alert('Este cliente tem trabalhos vinculados. Exclua ou transfira esses trabalhos primeiro.');return}modal={mode:'delete',type,item:data[type].find(x=>x.id===id)};render()}else if(b.dataset.editBalance!==undefined){modal={mode:'balance'};render()}else if(b.dataset.resetOpen!==undefined){modal={mode:'reset'};render()}else if(b.dataset.confirmReset!==undefined){const input=document.getElementById('reset-confirmation');if(!input||input.value.trim().toUpperCase()!=='APAGAR'){alert('Digite APAGAR para confirmar a exclusão.');return}data={transactions:[],clients:[],jobs:[],cards:[],openingBalance:0};page='home';scope='geral';modal=null;save();render();window.scrollTo(0,0)}else if(b.dataset.confirmDelete!==undefined){const type=modal.type,item=modal.item;if(type==='transactions'){
  if(item.cardAuto){alert('Este pagamento é vinculado a uma fatura. Reabra ou edite a fatura em Cartões.');return}
  detachJobTransaction(item);
 }
