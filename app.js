@@ -236,11 +236,68 @@ function nexoToast(message){
  clearTimeout(nexoToastTimer);
  nexoToastTimer=setTimeout(()=>toast.classList.remove('is-visible'),2300);
 }
+// v40: animacoes visuais; nunca modificam os dados financeiros.
+let nexoMotionSignature='';
+let nexoMotionFrame=0;
+const nexoMoneyFormat=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+const nexoIntegerFormat=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
+function nexoAnimateNumbers(shell){
+ const selectors='.hero .amount,.herofoot b,.stat,.cards-overview-value,.card-invoice-total,.card-invoice-amount,.job-payments strong';
+ const nodes=[...shell.querySelectorAll(selectors)].slice(0,36);
+ const amounts=[];
+ for(const el of nodes){
+  const original=el.textContent.trim();
+  const isMoney=/^-?\\s*R\\$\\s*[\\d.]+,\\d{2}$/.test(original);
+  const isCount=/^\\d{1,6}$/.test(original);
+  if(!isMoney&&!isCount)continue;
+  const value=isMoney?Number(original.replace(/[^\\d,-]/g,'').replace(',','.')):Number(original);
+  if(!Number.isFinite(value))continue;
+  el.setAttribute('aria-label',original);
+  amounts.push({el,value,isMoney,original});
+ }
+ if(!amounts.length)return;
+ const started=performance.now();
+ const duration=920;
+ cancelAnimationFrame(nexoMotionFrame);
+ function frame(now){
+  if(!shell.isConnected)return;
+  const t=Math.min(1,(now-started)/duration);
+  const eased=1-Math.pow(1-t,4);
+  for(const item of amounts){
+   if(t===1){item.el.textContent=item.original;continue}
+   const current=item.value*eased;
+   item.el.textContent=item.isMoney?nexoMoneyFormat.format(current):nexoIntegerFormat.format(Math.round(current));
+  }
+  if(t<1)nexoMotionFrame=requestAnimationFrame(frame);
+ }
+ nexoMotionFrame=requestAnimationFrame(frame);
+}
+function nexoAnimateCharts(shell){
+ for(const path of shell.querySelectorAll('svg.chart path')){
+  if(typeof path.getTotalLength!=='function')continue;
+  const length=path.getTotalLength();
+  if(!Number.isFinite(length)||length<=0)continue;
+  path.style.strokeDasharray=String(length);
+  path.style.strokeDashoffset=String(length);
+  path.getBoundingClientRect();
+  path.style.transition='stroke-dashoffset 950ms cubic-bezier(.22,1,.36,1) 140ms';
+  path.style.strokeDashoffset='0';
+ }
+}
 function nexoAnimateView(){
- if(nexoLastPage===page)return;
- nexoLastPage=page;
  const shell=app.querySelector('.shell');
- if(shell){shell.classList.remove('nexo-view-enter');void shell.offsetWidth;shell.classList.add('nexo-view-enter')}
+ if(!shell)return;
+ const signature=JSON.stringify([activeKey,page,scope,period,
+  data.openingBalance,data.transactions.length,data.jobs.length,data.cards.length,
+  data.transactions.reduce((v,x)=>v+(x.kind==='in'?1:-1)*Number(x.amount||0),0),
+  data.cards.reduce((v,x)=>v+Number(x.amount||0),0),
+  data.jobs.reduce((v,x)=>v+Number(x.paidAmount||0)+Number(x.amount||0),0)]);
+ if(signature===nexoMotionSignature||modal||document.hidden)return;
+ nexoMotionSignature=signature;
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ shell.classList.add('nexo-view-enter','nexo-motion');
+ nexoAnimateNumbers(shell);
+ nexoAnimateCharts(shell);
 }
 function render(){const pages={home,transactions,jobs,clients,cards};app.innerHTML=`<main class="shell"><header class="top"><div class="brand"><img class="logo brand-app-icon" src="./icons/logo-nexo.webp?v=22" width="44" height="44" alt="" aria-hidden="true"><div><strong>nexo</strong><div class="eyebrow">FINANÇAS &amp; PROJETOS</div></div></div><div class="topactions"><button type="button" class="nexo-sync-indicator" id="nexo-sync-indicator" data-account-open data-sync-phase="local" title="Ver estado da sincronização" aria-label="Abrir conta e sincronização"><span class="nexo-sync-dot" aria-hidden="true"></span><span class="nexo-sync-label">Somente neste aparelho</span></button><button class="btn tiny ghost accountbtn" data-account-open title="Gerenciar conta Google e sincronização" aria-label="Conta e sincronização">${uiIcon('settings')} Conta</button><button class="btn tiny ghost" data-export title="Salvar cópia de segurança">${uiIcon('backup')} Backup</button><button class="btn tiny ghost" data-import title="Importar arquivo de backup do NEXO">${uiIcon('backup')} Importar backup</button><input id="nexo-import-file" type="file" accept=".json,application/json" hidden aria-label="Selecionar backup JSON do NEXO"><button class="btn tiny ghost settingsbtn" data-reset-open title="Configurações: começar do zero" aria-label="Configurações e limpeza de dados">${uiIcon('settings')}</button></div></header>${pages[page]()}<nav class="nav" aria-label="Navegação principal">${[['home','⌂','Início'],['jobs','▣','Trabalhos'],['transactions','◈','Finanças'],['cards','▤','Cartões'],['clients','♙','Clientes']].map(([id,ico,label])=>`<button data-page="${id}" class="${page===id?'active':''}"><span>${uiIcon(id)}</span>${label}</button>`).join('')}</nav></main>${renderModal()}`;nexoAnimateView();window.dispatchEvent(new CustomEvent('nexo:sync-status',{detail:nexoSyncState}))}
 // Importação local: valida antes de substituir; não altera dados até a confirmação.
