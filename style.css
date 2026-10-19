@@ -900,3 +900,21 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nexo-bill-empty{padding:28px 0;color:#9199a6;font-size:13px;line-height:1.6}
 @media(max-width:800px){.nexo-bill-history{grid-template-columns:minmax(0,1fr)}.nexo-bill-history-panel{padding:21px 19px}.nexo-bill-list{max-height:360px}}
 @media(max-width:380px){.nexo-bill-row{gap:8px}.nexo-bill-info strong{font-size:13px}.nexo-bill-controls b{font-size:13px}.nexo-bill-action{font-size:10px;padding:6px 7px}}
+
+
+/* v53 — separação entre valor e status nas movimentações */
+.listcard.row .nexo-transaction-status{
+ margin-top:10px;
+ margin-left:14px;
+ vertical-align:middle;
+ white-space:nowrap;
+ line-height:1.45;
+}
+.listcard.row b.money-out,
+.listcard.row b.money-in{display:inline-block;vertical-align:middle;white-space:nowrap}
+@media(max-width:520px){
+ .listcard.row .nexo-transaction-status{
+  display:table;
+  margin:10px 0 0 auto;
+ }
+}
