@@ -236,39 +236,49 @@ function nexoToast(message){
  clearTimeout(nexoToastTimer);
  nexoToastTimer=setTimeout(()=>toast.classList.remove('is-visible'),2300);
 }
-// v40: animacoes visuais; nunca modificam os dados financeiros.
-let nexoMotionSignature='';
+// v42: animações de apresentação isoladas dos dados e da sincronização.
 let nexoMotionFrame=0;
+let nexoMotionSignature='';
+let nexoMotionPage='';
 const nexoMoneyFormat=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const nexoIntegerFormat=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0});
-function nexoAnimateNumbers(shell){
- const selectors='.hero .amount,.herofoot b,.stat,.cards-overview-value,.card-invoice-total,.card-invoice-amount,.job-payments strong';
- const nodes=[...shell.querySelectorAll(selectors)].slice(0,36);
- const amounts=[];
- for(const el of nodes){
-  const original=el.textContent.trim();
-  const isMoney=/^-?\s*R\$\s*[\d.]+,\d{2}$/.test(original);
-  const isCount=/^\d{1,6}$/.test(original);
-  if(!isMoney&&!isCount)continue;
-  const value=isMoney?Number(original.replace(/[^\d,-]/g,'').replace(',','.')):Number(original);
-  if(!Number.isFinite(value))continue;
-  el.setAttribute('aria-label',original);
-  amounts.push({el,value,isMoney,original});
+function nexoParseAnimatedValue(text){
+ const original=String(text||'').trim();
+ const currency=original.match(/^([−-])?\\s*R\\$\\s*([\\d.]+),(\\d{2})$/u);
+ if(currency){
+  const value=Number(currency[2].replaceAll('.','')+'.'+currency[3])*(currency[1]?-1:1);
+  return Number.isFinite(value)?{value,isMoney:true,original}:null;
  }
- if(!amounts.length)return;
- const started=performance.now();
- const duration=920;
+ if(/^\\d{1,6}$/.test(original))return {value:Number(original),isMoney:false,original};
+ return null;
+}
+function nexoAnimateNumbers(shell){
+ const selector='.hero .amount,.herofoot b,.stat,.cards-overview-value,.card-invoice-total,.card-invoice-amount,.card-invoice-value,.job-payments strong';
+ const amounts=[];
+ for(const el of shell.querySelectorAll(selector)){
+  const item=nexoParseAnimatedValue(el.textContent);
+  if(!item)continue;
+  el.setAttribute('aria-label',item.original);
+  amounts.push({...item,el});
+ }
  cancelAnimationFrame(nexoMotionFrame);
+ if(!amounts.length)return;
+ const duration=1150;
+ let startTime=null;
+ // Os números ficam zerados no primeiro frame, evitando que a contagem
+ // comece depois de o valor final já ter sido exibido.
+ for(const item of amounts)item.el.textContent=item.isMoney?nexoMoneyFormat.format(0):'0';
  function frame(now){
   if(!shell.isConnected)return;
-  const t=Math.min(1,(now-started)/duration);
-  const eased=1-Math.pow(1-t,4);
+  if(startTime===null)startTime=now;
+  const progress=Math.min(1,(now-startTime)/duration);
+  const eased=1-Math.pow(1-progress,3);
   for(const item of amounts){
-   if(t===1){item.el.textContent=item.original;continue}
-   const current=item.value*eased;
-   item.el.textContent=item.isMoney?nexoMoneyFormat.format(current):nexoIntegerFormat.format(Math.round(current));
+   if(progress===1){item.el.textContent=item.original;continue}
+   const value=item.value*eased;
+   item.el.textContent=item.isMoney?nexoMoneyFormat.format(value):nexoIntegerFormat.format(Math.round(value));
   }
-  if(t<1)nexoMotionFrame=requestAnimationFrame(frame);
+  if(progress<1)nexoMotionFrame=requestAnimationFrame(frame);
  }
  nexoMotionFrame=requestAnimationFrame(frame);
 }
@@ -287,14 +297,18 @@ function nexoAnimateCharts(shell){
 function nexoAnimateView(){
  const shell=app.querySelector('.shell');
  if(!shell)return;
+ // Render recria o DOM. Sempre cancelar frames do DOM anterior.
+ cancelAnimationFrame(nexoMotionFrame);
+ if(modal||document.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  const signature=JSON.stringify([activeKey,page,scope,period,
   data.openingBalance,data.transactions.length,data.jobs.length,data.cards.length,
   data.transactions.reduce((v,x)=>v+(x.kind==='in'?1:-1)*Number(x.amount||0),0),
   data.cards.reduce((v,x)=>v+Number(x.amount||0),0),
   data.jobs.reduce((v,x)=>v+Number(x.paidAmount||0)+Number(x.amount||0),0)]);
- if(signature===nexoMotionSignature||modal||document.hidden)return;
+ const changed=signature!==nexoMotionSignature||page!==nexoMotionPage;
+ if(!changed)return;
  nexoMotionSignature=signature;
- if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ nexoMotionPage=page;
  shell.classList.add('nexo-view-enter','nexo-motion');
  nexoAnimateNumbers(shell);
  nexoAnimateCharts(shell);
